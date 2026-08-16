@@ -1146,8 +1146,9 @@
     const st = Sync ? Sync.status() : { enabled: false, key: "", server: "", lastSyncAt: null, pending: false, error: null };
     const t = $("#syncToggle");
     if (t) t.checked = !!st.enabled;
+    // 面板（含服务器地址输入）始终可见——填地址是开启的前置步骤，不能被开关状态隐藏
     const panel = $("#syncPanel");
-    if (panel) panel.style.display = st.enabled ? "" : "none";
+    if (panel) panel.style.display = "";
     const server = $("#syncServer");
     if (server) server.value = st.server || "";
     const box = $("#syncKeyBox");
