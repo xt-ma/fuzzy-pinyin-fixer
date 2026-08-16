@@ -1140,27 +1140,32 @@
     renderSyncSettings();
   }
 
-  /* 云同步设置区渲染（开关/面板/密钥/状态） */
+  /* 云同步设置区渲染（本地密钥只读展示 / 远端密钥输入 / 自动同步开关 / 状态） */
   function renderSyncSettings() {
     const Sync = window.Sync;
     const st = Sync ? Sync.status() : { enabled: false, key: "", server: "", lastSyncAt: null, pending: false, error: null };
-    const t = $("#syncToggle");
-    if (t) t.checked = !!st.enabled;
-    // 面板（含服务器地址输入）始终可见——填地址是开启的前置步骤，不能被开关状态隐藏
-    const panel = $("#syncPanel");
-    if (panel) panel.style.display = "";
+    const auto = $("#syncAutoToggle");
+    if (auto) auto.checked = !!st.enabled;
     const server = $("#syncServer");
     if (server) server.value = st.server || "";
-    const box = $("#syncKeyBox");
-    if (box) {
-      box.style.display = st.enabled && st.key ? "" : "none";
-      box.textContent = st.key || "";
+    // 远端密钥输入框：保持用户输入，绝不回填/自动生成
+    // 本地密钥：只读展示当前绑定
+    const hasKey = !!st.key;
+    const local = $("#localKeyBox");
+    if (local) {
+      local.textContent = hasKey ? st.key : "（未绑定）";
+      local.className = "sync-key-box" + (hasKey ? "" : " muted");
     }
+    // 复制/重置按钮仅在有本地密钥时可用
+    const copyBtn = $("#btnCopyKey");
+    if (copyBtn) copyBtn.style.display = hasKey ? "" : "none";
+    const resetBtn = $("#btnResetKey");
+    if (resetBtn) resetBtn.style.display = hasKey ? "" : "none";
     const hint = $("#syncHint");
     if (hint) {
-      hint.innerHTML = st.enabled
-        ? "<span>✔</span><span>自动同步已开启：打开应用自动拉取，练习后自动推送。其他设备填入同一密钥即可共享进度。</span>"
-        : "<span>ℹ</span><span>开启后本机数据自动备份到云端，多台设备用同一密钥无感同步。需要先部署 Workers（见 docs/deploy-cloudflare.md）。</span>";
+      hint.innerHTML = hasKey
+        ? "<span>✔</span><span>本机已绑定密钥" + (st.enabled ? "，自动同步已开启：打开应用自动拉取、练习后自动推送。" : "，自动同步已关闭：练习数据不会自动上传，可随时点「立即同步」。") + "</span>"
+        : "<span>ℹ</span><span>本机尚未绑定密钥：粘贴另一台设备的密钥后点「确定同步」，或点「生成新密钥」创建全新同步空间（请立即复制保存，丢失无法找回）。</span>";
     }
     const status = $("#syncStatus");
     if (status) {
@@ -1354,26 +1359,15 @@
       renderSettings();
       toast(ev.target.checked ? "已启用记忆调度（到期字优先复习）" : "已切换回纯随机出题");
     });
-    // 云同步开关
-    $("#syncToggle").addEventListener("change", (ev) => {
+    // 自动同步开关（与密钥绑定解耦：只控制绑定后是否自动推送/拉取）
+    $("#syncAutoToggle").addEventListener("change", (ev) => {
       const on = ev.target.checked;
-      const settings = Store.getSettings();
-      if (on) {
-        if (!settings.syncServer) {
-          toast("请先填写同步服务器地址");
-          ev.target.checked = false;
-          renderSettings();
-          return;
-        }
-        if (!settings.syncKey) Store.setSettings({ syncKey: Sync.generateKey() });
-        Store.setSettings({ enableSync: true });
-        toast("已开启自动云同步");
-        Sync.init(); // 立即静默拉取合并
-      } else {
-        Store.setSettings({ enableSync: false });
-        toast("已关闭云同步（本地数据不受影响）");
+      Store.setSettings({ enableSync: on });
+      if (on && Store.getSettings().syncKey && Store.getSettings().syncServer) {
+        Sync.init(); // 触发启动静默拉取
       }
       renderSettings();
+      toast(on ? "已开启自动同步" : "已关闭自动同步（可手动「立即同步」）");
     });
     // 服务器地址保存
     $("#syncServer").addEventListener("change", (ev) => {
@@ -1381,7 +1375,72 @@
       toast("同步服务器地址已保存");
       renderSettings();
     });
-    // 复制密钥
+    // 确定同步：粘贴远端密钥 → 校验 → 绑定 → 立即同步一次 → 成功后本地密钥刷新
+    $("#btnBindSync").addEventListener("click", async () => {
+      const val = String(($("#remoteKeyInput") || {}).value || "").trim();
+      if (!Sync.isValidKey(val)) {
+        toast("密钥格式不正确（应为 fpf- 开头的长字符串），请检查后重试");
+        return;
+      }
+      if (!Store.getSettings().syncServer) {
+        toast("请先填写同步服务器地址");
+        return;
+      }
+      // 本地已有练习数据时：双向合并会把本机数据推送到该密钥空间（换人/换设备时防污染）
+      const localDataCount = Store.getReviews().length + Object.keys(Store.getCards()).length;
+      if (localDataCount > 0) {
+        popconfirm(
+          "确认绑定该密钥？",
+          "本机已有 " + localDataCount + " 条练习数据，绑定后将与该密钥的云端数据<b>双向合并</b>（本机数据会上传到该空间）。如想纯净恢复/切换身份，请先「导出备份」并「清除本地数据」。确定继续？",
+          async () => {
+            Store.setSettings({ syncKey: val });
+            const ok = await Sync.syncNow();
+            renderSyncSettings();
+            if (ok) {
+              $("#remoteKeyInput").value = ""; // 绑定成功，清空输入框
+              toast("密钥已绑定并同步成功");
+            } else {
+              toast("同步失败：" + (Sync.status().error || "网络错误"));
+            }
+          }
+        );
+      } else {
+        Store.setSettings({ syncKey: val });
+        const ok = await Sync.syncNow();
+        renderSyncSettings();
+        if (ok) {
+          $("#remoteKeyInput").value = ""; // 绑定成功，清空输入框
+          toast("密钥已绑定并同步成功");
+        } else {
+          toast("同步失败：" + (Sync.status().error || "网络错误"));
+        }
+      }
+    });
+    // 立即同步：手动拉取合并 + 推送（不依赖自动开关）
+    $("#btnManualSync").addEventListener("click", async () => {
+      if (!Store.getSettings().syncKey || !Store.getSettings().syncServer) {
+        toast("请先绑定密钥并填写服务器地址");
+        return;
+      }
+      const ok = await Sync.syncNow();
+      renderSyncSettings();
+      toast(ok ? "同步完成" : "同步失败：" + (Sync.status().error || "网络错误"));
+    });
+    // 生成新密钥（新用户）：创建全新空间并绑定
+    $("#btnGenKey").addEventListener("click", () => {
+      // 本地已有练习数据时：生成新密钥 = 本机数据将推送到全新空间（换人使用/开新进度时防污染）
+      const localDataCount = Store.getReviews().length + Object.keys(Store.getCards()).length;
+      const warn =
+        localDataCount > 0
+          ? "本机已有 " + localDataCount + " 条练习数据，生成新密钥后这些数据将同步到<b>新空间</b>。若这些数据不属于你（他人浏览器/共享电脑），请先「导出备份」并「清除本地数据」再生成。"
+          : "将生成一把全新密钥并创建新的同步空间。";
+      popconfirm("生成新密钥", warn + " 若你已有密钥，请粘贴到上方「同步密钥（远端）」输入框后点「确定同步」。确定生成？", () => {
+        Store.setSettings({ syncKey: Sync.generateKey() });
+        renderSyncSettings();
+        toast("已生成新密钥，请立即点「复制」保存（密钥丢失无法找回）");
+      });
+    });
+    // 复制本地密钥
     $("#btnCopyKey").addEventListener("click", async () => {
       const k = Store.getSettings().syncKey;
       if (!k) return;
@@ -1392,14 +1451,34 @@
         toast("自动复制失败，请手动复制：" + k);
       }
     });
-    // 重置密钥（作废旧空间 + 生成新密钥）
+    // 重置密钥（作废旧空间 + 生成新密钥；云端数据将被删除）
     $("#btnResetKey").addEventListener("click", () => {
-      popconfirm("重置同步密钥", "将作废当前密钥对应的云端空间并生成新密钥，确定吗？（建议先导出备份）", async () => {
+      popconfirm("重置密钥", "将删除当前密钥对应云端空间里的全部数据，并生成新密钥。此操作不可恢复，强烈建议先导出备份。确定吗？", async () => {
         await Sync.resetSpace();
         Store.setSettings({ syncKey: Sync.generateKey() });
         toast("已生成新密钥");
         renderSettings();
       });
+    });
+    // 清除本地数据（换人使用/重新开始；云端数据不受影响）——双重确认
+    $("#btnClearData").addEventListener("click", () => {
+      const hasData = Store.getReviews().length + Object.keys(Store.getCards()).length > 0;
+      popconfirm(
+        "清除本地数据",
+        "将删除本机全部练习记录、密钥与同步配置，且<b>不可恢复</b>！云端数据不受影响。强烈建议先「导出备份」。确定继续？",
+        () => {
+          popconfirm(
+            "再次确认",
+            "真的要清除本机全部数据吗？此操作无法撤销。若稍后想找回，只能靠之前导出的备份文件。确定清除？",
+            () => {
+              Store.clearAll();
+              try { localStorage.removeItem("fpf_syncMeta"); } catch (e) { /* ignore */ }
+              renderSettings();
+              toast(hasData ? "本地数据已全部清除" : "本地数据已清除（本来就没有记录）");
+            }
+          );
+        }
+      );
     });
     // 云同步启动（若已配置：静默拉取合并）
     if (window.Sync) {

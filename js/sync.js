@@ -113,8 +113,8 @@
     },
 
     /* ---------------- 推送（PUT：合并后全量覆盖本空间，幂等） ---------------- */
-    async push() {
-      if (!this.enabled() || !this.key() || !this.server()) return false;
+    async push(force) {
+      if (!force && (!this.enabled() || !this.key() || !this.server())) return false;
       if (this._pushing) return false;
       this._pushing = true;
       clearTimeout(this._retryTimer);
@@ -153,8 +153,8 @@
     },
 
     /* ---------------- 拉取（GET：云端并入本地，双向合并） ---------------- */
-    async pull() {
-      if (!this.enabled() || !this.key() || !this.server()) return false;
+    async pull(force) {
+      if (!force && (!this.enabled() || !this.key() || !this.server())) return false;
       try {
         const res = await fetch(this.server() + "/api/sync", {
           method: "GET",
@@ -162,10 +162,10 @@
         });
         if (!res.ok) throw new Error("HTTP " + res.status);
         const body = await res.json().catch(() => ({}));
-        if (body.ok && body.data) {
-          // 双向合并（抑制内部打点），并把合并结果推回云端（幂等，保证云端为最新合并态）
-          Store.importData(body.data);
-          await this.push();
+        if (body.ok) {
+          // 双向合并（抑制内部打点），并始终回推一次（幂等）：空空间也把本地数据推上去
+          if (body.data) Store.importData(body.data);
+          await this.push(force);
         }
         // 请求成功即记录上次同步（空空间无数据也视为一次成功同步）
         this._setMeta({ lastSyncAt: body.updatedAt || Date.now() });
@@ -177,6 +177,11 @@
         this._notify();
         return false;
       }
+    },
+
+    /* ---------------- 手动立即同步（拉取合并 + 回推，不依赖自动同步开关） ---------------- */
+    async syncNow() {
+      return this.pull(true);
     },
 
     /* ---------------- 立即 flush（页面关闭/隐藏时尽力推送） ---------------- */
@@ -201,17 +206,20 @@
 
     /* ---------------- 启动：绑定事件 + 静默拉取 ---------------- */
     init() {
-      // 事件绑定（file:// 与部署环境均适用；测试环境无 document/window 则跳过）
-      if (typeof document !== "undefined") {
-        document.addEventListener("visibilitychange", () => {
-          if (document.visibilityState === "hidden") this.flush();
-        });
-      }
-      if (typeof window !== "undefined") {
-        window.addEventListener("beforeunload", () => this.flush());
-        window.addEventListener("online", () => {
-          if (this._dirty) this.push();
-        });
+      // 事件只绑一次（开关可能多次触发 init）
+      if (!this._bound) {
+        this._bound = true;
+        if (typeof document !== "undefined") {
+          document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === "hidden") this.flush();
+          });
+        }
+        if (typeof window !== "undefined") {
+          window.addEventListener("beforeunload", () => this.flush());
+          window.addEventListener("online", () => {
+            if (this._dirty) this.push();
+          });
+        }
       }
       // 启动静默拉取（异步，不阻塞）
       if (this.enabled() && this.key() && this.server()) {

@@ -139,35 +139,43 @@
 
         <div class="ant-card mt-5">
           <div class="card-body">
-            <div class="settings-section-title">云同步（自动）</div>
-            <div class="row-between">
+            <div class="settings-section-title">云同步</div>
+            <div class="mt-4 ant-alert info" id="syncHint"></div>
+            <div class="mt-4">
+              <div class="settings-item-title">同步服务器地址</div>
+              <div class="settings-item-desc">你的 Cloudflare Worker 地址（部署流程见 docs/deploy-cloudflare.md）。</div>
+              <input class="ant-input" id="syncServer" placeholder="https://fpf-sync.你的用户名.workers.dev" style="margin-top:6px">
+            </div>
+            <div class="mt-4">
+              <div class="settings-item-title">同步密钥（远端）</div>
+              <div class="settings-item-desc">粘贴另一台设备已生成的密钥；首次使用请点下方「生成新密钥」。</div>
+              <input class="ant-input" id="remoteKeyInput" placeholder="fpf-xxxxxxxx...（粘贴已有的密钥）" style="margin-top:6px; font-family:monospace">
+              <div class="mt-3">
+                <button class="ant-btn primary" id="btnBindSync">确定同步</button>
+                <button class="ant-btn" id="btnManualSync">立即同步</button>
+              </div>
+            </div>
+            <div class="mt-4">
+              <div class="settings-item-title">本机绑定密钥</div>
+              <div class="settings-item-desc">当前设备正在使用的密钥（只读，由上方绑定或生成而来）。</div>
+              <div id="localKeyBox" class="sync-key-box" style="font-family:monospace">（未绑定）</div>
+              <div class="mt-3">
+                <button class="ant-btn" id="btnGenKey">生成新密钥</button>
+                <button class="ant-btn" id="btnCopyKey">复制</button>
+                <button class="ant-btn" id="btnResetKey">重置</button>
+                <span class="ant-tag" id="syncStatus" style="margin-left:8px">未同步</span>
+              </div>
+            </div>
+            <div class="row-between mt-4">
               <div>
-                <div class="settings-item-title">自动云同步</div>
-                <div class="settings-item-desc">数据自动备份到云端，多设备无感同步。开启后自动生成同步密钥。</div>
+                <div class="settings-item-title">自动同步</div>
+                <div class="settings-item-desc">开启后练习数据自动推送；关闭则仅通过「立即同步」手动同步。</div>
               </div>
               <label class="switch">
-                <input type="checkbox" id="syncToggle">
+                <input type="checkbox" id="syncAutoToggle">
                 <span class="slider"></span>
               </label>
             </div>
-            <div id="syncPanel" class="mt-4">
-              <div class="mt-3">
-                <div class="settings-item-title">同步服务器地址</div>
-                <div class="settings-item-desc">你的 Cloudflare Worker 地址（部署流程见 docs/deploy-cloudflare.md）。</div>
-                <input class="ant-input" id="syncServer" placeholder="https://fpf-sync.你的用户名.workers.dev" style="margin-top:6px">
-              </div>
-              <div class="mt-3">
-                <div class="settings-item-title">同步密钥</div>
-                <div class="settings-item-desc" id="syncKeyDesc">设备间填入同一密钥即共享同一份进度（公司/家里电脑填同一个）。</div>
-                <div id="syncKeyBox" class="sync-key-box" style="display:none"></div>
-                <div class="mt-3">
-                  <button class="ant-btn" id="btnCopyKey">复制密钥</button>
-                  <button class="ant-btn" id="btnResetKey">重置密钥</button>
-                  <span class="ant-tag" id="syncStatus" style="margin-left:8px">未同步</span>
-                </div>
-              </div>
-            </div>
-            <div class="mt-4 ant-alert info" id="syncHint"></div>
           </div>
         </div>
 
@@ -206,6 +214,13 @@
               <button class="ant-btn" onclick="App.pickImportFile()">选择文件导入</button>
             </div>
             <input type="file" id="importFileInput" accept=".json,application/json" style="display:none">
+            <div class="row-between mt-4" style="border-top:1px solid var(--border-tertiary); padding-top:var(--sp-3)">
+              <div>
+                <div class="settings-item-title">清除本地数据</div>
+                <div class="settings-item-desc">删除本机全部练习记录、密钥与同步配置（云端数据不受影响）。用于换人使用/重新开始。</div>
+              </div>
+              <button class="ant-btn danger" id="btnClearData" style="color:var(--error); border-color:var(--error)">清除本地数据</button>
+            </div>
           </div>
         </div>
 
