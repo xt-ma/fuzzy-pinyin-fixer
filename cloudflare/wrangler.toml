@@ -8,4 +8,5 @@ compatibility_date = "2024-11-01"
 # 生产环境 KV 绑定（变量名 FPF_SYNC 与 index.js 中 env.FPF_SYNC 对应）
 [[kv_namespaces]]
 binding = "FPF_SYNC"
-id = "在此填写你的 KV 命名空间 ID（wrangler kv namespace create 的输出）"
+# 在此填写你的 KV 命名空间 ID（wrangler kv namespace create 的输出）
+id = "bb4088f93b414860ae4306e7c709d138"
