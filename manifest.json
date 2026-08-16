@@ -1,0 +1,16 @@
+{
+  "name": "模糊音克星 · 纠正方言模糊音",
+  "short_name": "模糊音克星",
+  "description": "in/ing、en/eng、l/n 模糊音辨析练习：词语题 + 多字题 + 记忆调度复习",
+  "lang": "zh-CN",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F5F5F5",
+  "theme_color": "#001529",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

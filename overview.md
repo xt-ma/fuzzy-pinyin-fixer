@@ -1,6 +1,6 @@
 # 模糊音克星 · 开发交付概览
 
-> 日期：2026-08-16 | 状态：v2 词库 + 多字题 + 答题流水 + 数据备份 + FSRS 记忆调度 + 自动云同步（Cloudflare）完成
+> 日期：2026-08-16 | 状态：v2 词库 + 多字题 + 答题流水 + 数据备份 + FSRS 记忆调度 + 自动云同步（Cloudflare）+ 同步交互定稿 + 移动端与 PWA 完成
 
 ## 本次完成内容
 
@@ -22,9 +22,11 @@
 - **FSRS 记忆调度**（`js/fsrs.js`，FSRS-6 从 fsrs4anki v6.1.1 移植，21 参数，纯 JS）：每答一题更新字卡记忆状态（stability/difficulty/due）；到期队列优先出题（`fromFSRS=true`）；设置页开关可回滚到纯随机旧逻辑；默认开启、第一题即生效
 - **自动云同步（Cloudflare Workers + KV，`js/sync.js` + `cloudflare/`）**：启动自动拉取合并、答题防抖 3s 自动推送、关闭 flush、失败指数退避重试；密钥即身份（应用生成 32 字节）；设置页开关/服务器地址/密钥管理/状态显示；部署教程 `docs/deploy-cloudflare.md`
 - **数据备份与多端迁移（设置页）**：数据概况 + 一键导出（版本化 JSON 下载）+ 导入（校验 + 双向合并）；配合坚果云同步盘可跨设备迁移。方案调研见 `docs/sync-plan.md`
+- **同步交互定稿（设置页 · 云同步区）**：远端密钥输入框只用于粘贴已有密钥（输入过程不写配置），本机密钥只读展示区（系统生成的密钥绝不进输入框），生成前 popconfirm 确认、绑定/生成时本地有数据触发污染警告；备份与迁移区新增「清除本地数据」（双重确认，云端不受影响）用于换人使用/重新开始
+- **移动端与 PWA**：480px 断点 + 触屏热区 ≥44px + 安全区（`viewport-fit=cover` + `env(safe-area-inset-*)`）+ `matchMedia('(pointer: coarse)')` 切换答题页键盘提示文案为「点击选项作答」；PWA（`manifest.json` + `sw.js` + 图标 192/512）部署后支持「添加到主屏幕」全屏 + 离线壳缓存（仅 https 形态生效，file:// 下跳过 PWA 部分）
 - localStorage 数据键与 PRD 一致：`wrongBook` / `mastered` / `history` / `settings` / `reviews` / `cards`
 - 支持 `index.html?view=stats` 深链接
-- 测试：`node scripts/test_logic.js`（27）+ `test_features.js`（32）+ `test_sync.js`（47）+ `test_fsrs.js`（33）+ `test_sync_auto.js`（32）全绿，共 **171 断言**
+- 测试：`test_logic.js`（27）+ `test_features.js`（32）+ `test_sync.js`（47）+ `test_fsrs.js`（33）+ `test_sync_auto.js`（32）+ `test_sync_ui.js`（28）+ `test_mobile.js`（17）= **216 断言全绿**
 
 ## 关键决策
 
@@ -46,4 +48,5 @@
 - 多端同步后续阶段（`docs/sync-plan.md`）：Phase 2 坚果云文件夹半自动/全自动同步、Phase 3 Gist/BaaS 全自动云端同步（待排期）
 - FSRS 个性化训练（`docs/fsrs-scenario.md`）：攒够 ≥1000 条流水后，设置页提供"训练参数"（Web Worker 后台拟合 21 个 w，展示 log-loss）；每 1~3 个月重训一次
 - FSRS rating 扩展：当前 2 档（答对 3 / 答错 1），可加"简单/一般"自评映射 easy/good（零迁移）
+- 多字题回溯提示（L3 发现）：当前多行题答完后回溯提示不带「← 回看上一题」，可后续对齐单行分支
 - 真人发音 TTS 属 Out of Scope

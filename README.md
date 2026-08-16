@@ -18,6 +18,7 @@
 - **FSRS 记忆调度**（默认开启，设置页可关）：按记忆曲线安排复习——到期的字优先出题（交错随机），生疏的复习更频繁、熟练的间隔拉长；关闭可回滚到纯随机出题。算法为 FSRS-6（从 fsrs4anki v6.1.1 移植，21 参数，纯 JS）
 - **自动云同步**（Cloudflare Workers + KV，免费无服务器）：打开应用自动拉取合并、答题后自动推送、断网自动重试——多设备零手动操作无感同步；密钥即身份（应用生成 32 字节）。设置页同步区：新设备粘贴已有密钥「确定同步」、首台「生成新密钥」并复制保存、本机密钥只读展示、可手动「立即同步」/重置；「清除本地数据」用于换人使用/重新开始（云端数据不受影响）。部署教程见 `docs/deploy-cloudflare.md`
 - **数据备份与多端迁移**（设置页）：一键导出全部数据为 JSON 文件，任意设备导入（自动**合并**不覆盖）；配合坚果云等同步盘即可实现多端同步
+- **移动端与 PWA**：手机浏览器直接可用（480px 断点 + 触控热区 ≥44px + iOS 16px 防聚焦放大 + 刘海屏安全区）；部署到 Cloudflare Pages 后可"添加到主屏幕"全屏使用，离线壳缓存（manifest + Service Worker，断网可打开）。键盘快捷键文案在触屏设备自动切换为"点击选项作答"。
 - 词库基于《现代汉语语料库词频表》（cncorpus 2000 万字语料）+ 人工词库兜底，三组音对共 **726 条目 / 2588 词条**（每字 2-5 个词，按词频取优；66 个新关键字为词频表补充）
 
 ## 运行
@@ -33,12 +34,16 @@ python -m http.server 8734
 
 ```
 index.html            单页应用入口（file:// 可直接运行）
-css/style.css         全局样式（基于 docs/design-spec.md 方案 C tokens）
+manifest.json         PWA 配置（应用名/主题色/图标）
+sw.js                 PWA Service Worker（应用壳缓存，仅 https 生效）
+icons/icon-192.png    PWA 图标（192×192）
+icons/icon-512.png    PWA 图标（512×512）
+css/style.css         全局样式（基于 docs/design-spec.md 方案 C tokens + 响应式/触屏适配）
 js/store.js           localStorage 数据层（wrongBook/mastered/history/settings/reviews/cards + FSRS 调度写入）
 js/fsrs.js            FSRS-6 间隔重复调度核心（从 fsrs4anki v6.1.1 移植，纯 JS 零依赖）
 js/sync.js            自动云同步模块（密钥生成/状态机/拉取推送/失败重试，配合 cloudflare/）
 js/quiz.js            题目生成与轮次状态机（含多字题 rows / FSRS 到期队列出题）
-js/app.js             视图渲染与交互（首页/答题/复盘/统计/已掌握/错题本/设置）
+js/app.js             视图渲染与交互（首页/答题/复盘/统计/已掌握/错题本/设置 + 触屏键盘提示切换）
 data/words.js         词库数据（构建产物，供 <script> 直接加载）
 data/words.json       词库数据（可审计的 JSON 源）
 cloudflare/           Cloudflare Worker 同步服务（index.js + wrangler.toml）
@@ -67,6 +72,7 @@ node scripts/test_sync.js       # 数据导出/导入/合并/校验（47 项断�
 node scripts/test_fsrs.js       # FSRS 调度 + 到期队列 + 回滚切换（33 项断言）
 node scripts/test_sync_auto.js  # 自动云同步：密钥/打点/推送/重试/双设备（32 项断言）
 node scripts/test_sync_ui.js    # 同步设置区 UI：绑定/校验/警告/清除数据（28 项断言）
+node scripts/test_mobile.js     # 移动端适配：键盘提示切换 + PWA 文件（17 项断言）
 python scripts/analyze_wordfreq.py # 词频表组词覆盖率分析（docs/wordfreq_analysis.json）
 ```
 

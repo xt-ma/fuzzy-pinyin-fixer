@@ -184,6 +184,25 @@
 - 响应式布局，手机/桌面均可用；
 - 答题对错用绿/红标识。
 
+### 移动端与 PWA（2026-08-16 新增需求）
+
+**目标**：手机浏览器 / 添加到主屏幕后完整可用，触屏体验与桌面一致，弱网可离线打开。
+
+**响应式与触屏**：
+- 断点：`900px`（窄屏：隐藏侧栏、顶栏横滚）+ `480px`（手机：选项全宽、多字题行内选项竖排、顶栏只留 logo）；
+- 触控热区 ≥44px（iOS HIG 推荐），`touch-action: manipulation` 防双击缩放；
+- 输入框字号 ≥16px（防 iOS 聚焦自动放大）；
+- 刘海屏安全区：`viewport-fit=cover` + `env(safe-area-inset-*)` 适配顶栏/底部元素；
+- 交互提示区分输入方式：`matchMedia('(pointer: coarse)')` 时答题页提示"点击选项作答"，隐藏键盘快捷键文案（手机无实体键盘）。
+
+**PWA（仅部署形态生效，file:// 打开不可用）**：
+- `manifest.json`：应用名 / theme-color / 图标（192px + 512px PNG），支持"添加到主屏幕"全屏使用；
+- Service Worker 缓存应用壳（index.html / css / js / data/words.js），断网可打开、弱网秒开；
+- 缓存更新策略：SW 版本号 + `skipWaiting`/`clientsClaim`，新版本发布后自动生效；
+- ⚠️ SW 需 https 安全上下文：本地 `file://` 打开时自动跳过 PWA 能力（响应式/触屏适配不受影响）。
+
+**明确不做**：触觉振动反馈（`navigator.vibrate`）、底部 Tab 导航（顶部导航已够用）。
+
 ## Testing Decisions
 
 - 测试范围：纯前端项目，重点测试**题库数据完整性**与**题目生成逻辑**：

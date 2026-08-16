@@ -470,11 +470,14 @@
       renderAnsweredState(q);
     }
     updateToolbarState(q);
+    // 触屏设备（手机/平板）无实体键盘：提示改为点击操作
+    const isTouch = !!(window.matchMedia && window.matchMedia("(pointer: coarse)").matches);
     $("#quizKeyHint").textContent = rows
-      ? "多字题：请逐行选择，按数字键作答当前行"
+      ? (isTouch ? "多字题：请逐行点击选项作答" : "多字题：请逐行选择，按数字键作答当前行")
       : infinite
         ? "无限模式：答对自动下一题，随时点「结束本轮」查看复盘"
-        : "键盘：按数字键作答" + (Quiz.getRound().index > 0 ? "，← 回看上一题" : "");
+        : (isTouch ? "点击选项作答" : "键盘：按数字键作答") +
+          (Quiz.getRound().index > 0 ? (isTouch ? "，点左下角回看上一题" : "，← 回看上一题") : "");
   }
 
   /* ================= 已掌握常驻按钮 & 回溯 ================= */
