@@ -1,0 +1,1083 @@
+{
+ "total_fuzzy_chars": 560,
+ "missing": [
+  {
+   "char": "卵",
+   "freq": 613.0,
+   "readings": [
+    "luǎn"
+   ],
+   "pairs": [
+    "l/n"
+   ],
+   "tags": [
+    "l"
+   ],
+   "example_words": [
+    "产卵",
+    "卵巢",
+    "卵细胞"
+   ]
+  },
+  {
+   "char": "厘",
+   "freq": 591.0,
+   "readings": [
+    "lí"
+   ],
+   "pairs": [
+    "l/n"
+   ],
+   "tags": [
+    "l"
+   ],
+   "example_words": [
+    "厘米"
+   ]
+  },
+  {
+   "char": "氢",
+   "freq": 539.0,
+   "readings": [
+    "qīng"
+   ],
+   "pairs": [
+    "in/ing"
+   ],
+   "tags": [
+    "ing"
+   ],
+   "example_words": [
+    "氢气",
+    "氢氧化钠",
+    "氢原子"
+   ]
+  },
+  {
+   "char": "硫",
+   "freq": 533.0,
+   "readings": [
+    "liú"
+   ],
+   "pairs": [
+    "l/n"
+   ],
+   "tags": [
+    "l"
+   ],
+   "example_words": [
+    "硫酸",
+    "二氧化硫",
+    "硫酸铜"
+   ]
+  },
+  {
+   "char": "垄",
+   "freq": 442.0,
+   "readings": [
+    "lǒng"
+   ],
+   "pairs": [
+    "l/n"
+   ],
+   "tags": [
+    "l"
+   ],
+   "example_words": [
+    "垄断",
+    "垄断资本"
+   ]
+  },
+  {
+   "char": "僚",
+   "freq": 410.0,
+   "readings": [
+    "liáo"
+   ],
+   "pairs": [
+    "l/n"
+   ],
+   "tags": [
+    "l"
+   ],
+   "example_words": [
+    "官僚",
+    "官僚主义",
+    "官僚资本主义"
+   ]
+  },
+  {
+   "char": "膨",
+   "freq": 386.0,
+   "readings": [
+    "péng"
+   ],
+   "pairs": [
+    "en/eng"
+   ],
+   "tags": [
+    "eng"
+   ],
+   "example_words": [
+    "膨胀",
+    "通货膨胀"
+   ]
+  },
+  {
+   "char": "钠",
+   "freq": 287.0,
+   "readings": [
+    "nà"
+   ],
+   "pairs": [
+    "l/n"
+   ],
+   "tags": [
+    "n"
+   ],
+   "example_words": [
+    "氢氧化钠",
+    "氯化钠",
+    "碳酸钠"
+   ]
+  },
+  {
+   "char": "氯",
+   "freq": 283.0,
+   "readings": [
+    "lǜ"
+   ],
+   "pairs": [
+    "l/n"
+   ],
+   "tags": [
+    "l"
+   ],
+   "example_words": [
+    "氯气",
+    "氯化钠",
+    "氯酸钾"
+   ]
+  },
+  {
+   "char": "粘",
+   "freq": 209.0,
+   "readings": [
+    "nián"
+   ],
+   "pairs": [
+    "l/n"
+   ],
+   "tags": [
+    "n"
+   ],
+   "example_words": [
+    "粘液",
+    "粘土"
+   ]
+  },
+  {
+   "char": "荧",
+   "freq": 208.0,
+   "readings": [
+    "yíng"
+   ],
+   "pairs": [
+    "in/ing"
+   ],
+   "tags": [
+    "ing"
+   ],
+   "example_words": [
+    "荧光屏",
+    "荧光"
+   ]
+  },
+  {
+   "char": "蚓",
+   "freq": 147.0,
+   "readings": [
+    "yǐn"
+   ],
+   "pairs": [
+    "in/ing"
+   ],
+   "tags": [
+    "in"
+   ],
+   "example_words": [
+    "蚯蚓"
+   ]
+  },
+  {
+   "char": "顷",
+   "freq": 138.0,
+   "readings": [
+    "qǐng"
+   ],
+   "pairs": [
+    "in/ing"
+   ],
+   "tags": [
+    "ing"
+   ],
+   "example_words": [
+    "公顷"
+   ]
+  },
+  {
+   "char": "瘤",
+   "freq": 133.0,
+   "readings": [
+    "liú"
+   ],
+   "pairs": [
+    "l/n"
+   ],
+   "tags": [
+    "l"
+   ],
+   "example_words": [
+    "肿瘤"
+   ]
+  },
+  {
+   "char": "垦",
+   "freq": 128.0,
+   "readings": [
+    "kěn"
+   ],
+   "pairs": [
+    "en/eng"
+   ],
+   "tags": [
+    "en"
+   ],
+   "example_words": [
+    "开垦"
+   ]
+  },
+  {
+   "char": "钮",
+   "freq": 128.0,
+   "readings": [
+    "niǔ"
+   ],
+   "pairs": [
+    "l/n"
+   ],
+   "tags": [
+    "n"
+   ],
+   "example_words": [
+    "按钮",
+    "电钮"
+   ]
+  },
+  {
+   "char": "乒",
+   "freq": 119.0,
+   "readings": [
+    "pīng"
+   ],
+   "pairs": [
+    "in/ing"
+   ],
+   "tags": [
+    "ing"
+   ],
+   "example_words": [
+    "乒乓球"
+   ]
+  },
+  {
+   "char": "榴",
+   "freq": 117.0,
+   "readings": [
+    "liú"
+   ],
+   "pairs": [
+    "l/n"
+   ],
+   "tags": [
+    "l"
+   ],
+   "example_words": [
+    "手榴弹"
+   ]
+  },
+  {
+   "char": "螺",
+   "freq": 113.0,
+   "readings": [
+    "luó"
+   ],
+   "pairs": [
+    "l/n"
+   ],
+   "tags": [
+    "l"
+   ],
+   "example_words": [
+    "螺旋"
+   ]
+  },
+  {
+   "char": "鲤",
+   "freq": 107.0,
+   "readings": [
+    "lǐ"
+   ],
+   "pairs": [
+    "l/n"
+   ],
+   "tags": [
+    "l"
+   ],
+   "example_words": [
+    "鲤鱼"
+   ]
+  },
+  {
+   "char": "紊",
+   "freq": 106.0,
+   "readings": [
+    "wěn"
+   ],
+   "pairs": [
+    "en/eng"
+   ],
+   "tags": [
+    "en"
+   ],
+   "example_words": [
+    "紊乱"
+   ]
+  },
+  {
+   "char": "馏",
+   "freq": 106.0,
+   "readings": [
+    "liú"
+   ],
+   "pairs": [
+    "l/n"
+   ],
+   "tags": [
+    "l"
+   ],
+   "example_words": [
+    "蒸馏",
+    "蒸馏水"
+   ]
+  },
+  {
+   "char": "婪",
+   "freq": 105.0,
+   "readings": [
+    "lán"
+   ],
+   "pairs": [
+    "l/n"
+   ],
+   "tags": [
+    "l"
+   ],
+   "example_words": [
+    "贪婪"
+   ]
+  },
+  {
+   "char": "粪",
+   "freq": 94.0,
+   "readings": [
+    "fèn"
+   ],
+   "pairs": [
+    "en/eng"
+   ],
+   "tags": [
+    "en"
+   ],
+   "example_words": [
+    "粪便"
+   ]
+  },
+  {
+   "char": "肾",
+   "freq": 92.0,
+   "readings": [
+    "shèn"
+   ],
+   "pairs": [
+    "en/eng"
+   ],
+   "tags": [
+    "en"
+   ],
+   "example_words": [
+    "肾脏"
+   ]
+  },
+  {
+   "char": "蜻",
+   "freq": 92.0,
+   "readings": [
+    "qīng"
+   ],
+   "pairs": [
+    "in/ing"
+   ],
+   "tags": [
+    "ing"
+   ],
+   "example_words": [
+    "蜻蜓"
+   ]
+  },
+  {
+   "char": "蜓",
+   "freq": 92.0,
+   "readings": [
+    "tíng"
+   ],
+   "pairs": [
+    "in/ing"
+   ],
+   "tags": [
+    "ing"
+   ],
+   "example_words": [
+    "蜻蜓"
+   ]
+  },
+  {
+   "char": "锣",
+   "freq": 92.0,
+   "readings": [
+    "luó"
+   ],
+   "pairs": [
+    "l/n"
+   ],
+   "tags": [
+    "l"
+   ],
+   "example_words": [
+    "锣鼓"
+   ]
+  },
+  {
+   "char": "痉",
+   "freq": 90.0,
+   "readings": [
+    "jìng"
+   ],
+   "pairs": [
+    "in/ing"
+   ],
+   "tags": [
+    "ing"
+   ],
+   "example_words": [
+    "痉挛"
+   ]
+  },
+  {
+   "char": "挛",
+   "freq": 90.0,
+   "readings": [
+    "luán"
+   ],
+   "pairs": [
+    "l/n"
+   ],
+   "tags": [
+    "l"
+   ],
+   "example_words": [
+    "痉挛"
+   ]
+  },
+  {
+   "char": "庐",
+   "freq": 87.0,
+   "readings": [
+    "lú"
+   ],
+   "pairs": [
+    "l/n"
+   ],
+   "tags": [
+    "l"
+   ],
+   "example_words": [
+    "庐山"
+   ]
+  },
+  {
+   "char": "荔",
+   "freq": 86.0,
+   "readings": [
+    "lì"
+   ],
+   "pairs": [
+    "l/n"
+   ],
+   "tags": [
+    "l"
+   ],
+   "example_words": [
+    "荔枝"
+   ]
+  },
+  {
+   "char": "寅",
+   "freq": 84.0,
+   "readings": [
+    "yín"
+   ],
+   "pairs": [
+    "in/ing"
+   ],
+   "tags": [
+    "in"
+   ],
+   "example_words": [
+    "马寅初"
+   ]
+  },
+  {
+   "char": "滤",
+   "freq": 81.0,
+   "readings": [
+    "lǜ"
+   ],
+   "pairs": [
+    "l/n"
+   ],
+   "tags": [
+    "l"
+   ],
+   "example_words": [
+    "过滤"
+   ]
+  },
+  {
+   "char": "镰",
+   "freq": 78.0,
+   "readings": [
+    "lián"
+   ],
+   "pairs": [
+    "l/n"
+   ],
+   "tags": [
+    "l"
+   ],
+   "example_words": [
+    "镰刀"
+   ]
+  },
+  {
+   "char": "拯",
+   "freq": 76.0,
+   "readings": [
+    "zhěng"
+   ],
+   "pairs": [
+    "en/eng"
+   ],
+   "tags": [
+    "eng"
+   ],
+   "example_words": [
+    "拯救"
+   ]
+  },
+  {
+   "char": "磷",
+   "freq": 74.0,
+   "readings": [
+    "lín"
+   ],
+   "pairs": [
+    "in/ing",
+    "l/n"
+   ],
+   "tags": [
+    "in"
+   ],
+   "example_words": [
+    "磷酸"
+   ]
+  },
+  {
+   "char": "粱",
+   "freq": 73.0,
+   "readings": [
+    "liáng"
+   ],
+   "pairs": [
+    "l/n"
+   ],
+   "tags": [
+    "l"
+   ],
+   "example_words": [
+    "高粱"
+   ]
+  },
+  {
+   "char": "悯",
+   "freq": 69.0,
+   "readings": [
+    "mǐn"
+   ],
+   "pairs": [
+    "in/ing"
+   ],
+   "tags": [
+    "in"
+   ],
+   "example_words": [
+    "怜悯"
+   ]
+  },
+  {
+   "char": "疟",
+   "freq": 69.0,
+   "readings": [
+    "nüè"
+   ],
+   "pairs": [
+    "l/n"
+   ],
+   "tags": [
+    "n"
+   ],
+   "example_words": [
+    "疟疾"
+   ]
+  },
+  {
+   "char": "憬",
+   "freq": 68.0,
+   "readings": [
+    "jǐng"
+   ],
+   "pairs": [
+    "in/ing"
+   ],
+   "tags": [
+    "ing"
+   ],
+   "example_words": [
+    "憧憬"
+   ]
+  },
+  {
+   "char": "参",
+   "freq": 68.0,
+   "readings": [
+    "shēn"
+   ],
+   "pairs": [
+    "en/eng"
+   ],
+   "tags": [
+    "en"
+   ],
+   "example_words": [
+    "人参"
+   ]
+  },
+  {
+   "char": "菱",
+   "freq": 67.0,
+   "readings": [
+    "líng"
+   ],
+   "pairs": [
+    "in/ing",
+    "l/n"
+   ],
+   "tags": [
+    "ing"
+   ],
+   "example_words": [
+    "菱形"
+   ]
+  },
+  {
+   "char": "抨",
+   "freq": 66.0,
+   "readings": [
+    "pēng"
+   ],
+   "pairs": [
+    "en/eng"
+   ],
+   "tags": [
+    "eng"
+   ],
+   "example_words": [
+    "抨击"
+   ]
+  },
+  {
+   "char": "麓",
+   "freq": 65.0,
+   "readings": [
+    "lù"
+   ],
+   "pairs": [
+    "l/n"
+   ],
+   "tags": [
+    "l"
+   ],
+   "example_words": [
+    "山麓"
+   ]
+  },
+  {
+   "char": "瑛",
+   "freq": 64.0,
+   "readings": [
+    "yīng"
+   ],
+   "pairs": [
+    "in/ing"
+   ],
+   "tags": [
+    "ing"
+   ],
+   "example_words": [
+    "林瑛"
+   ]
+  },
+  {
+   "char": "窿",
+   "freq": 62.0,
+   "readings": [
+    "lóng"
+   ],
+   "pairs": [
+    "l/n"
+   ],
+   "tags": [
+    "l"
+   ],
+   "example_words": [
+    "窟窿"
+   ]
+  },
+  {
+   "char": "烙",
+   "freq": 62.0,
+   "readings": [
+    "lào"
+   ],
+   "pairs": [
+    "l/n"
+   ],
+   "tags": [
+    "l"
+   ],
+   "example_words": [
+    "烙印"
+   ]
+  },
+  {
+   "char": "坪",
+   "freq": 62.0,
+   "readings": [
+    "píng"
+   ],
+   "pairs": [
+    "in/ing"
+   ],
+   "tags": [
+    "ing"
+   ],
+   "example_words": [
+    "草坪"
+   ]
+  },
+  {
+   "char": "犁",
+   "freq": 60.0,
+   "readings": [
+    "lí"
+   ],
+   "pairs": [
+    "l/n"
+   ],
+   "tags": [
+    "l"
+   ],
+   "example_words": [
+    "伊犁"
+   ]
+  },
+  {
+   "char": "韧",
+   "freq": 60.0,
+   "readings": [
+    "rèn"
+   ],
+   "pairs": [
+    "en/eng"
+   ],
+   "tags": [
+    "en"
+   ],
+   "example_words": [
+    "坚韧"
+   ]
+  },
+  {
+   "char": "螂",
+   "freq": 60.0,
+   "readings": [
+    "láng"
+   ],
+   "pairs": [
+    "l/n"
+   ],
+   "tags": [
+    "l"
+   ],
+   "example_words": [
+    "螳螂"
+   ]
+  },
+  {
+   "char": "糯",
+   "freq": 58.0,
+   "readings": [
+    "nuò"
+   ],
+   "pairs": [
+    "l/n"
+   ],
+   "tags": [
+    "n"
+   ],
+   "example_words": [
+    "糯米"
+   ]
+  },
+  {
+   "char": "烹",
+   "freq": 57.0,
+   "readings": [
+    "pēng"
+   ],
+   "pairs": [
+    "en/eng"
+   ],
+   "tags": [
+    "eng"
+   ],
+   "example_words": [
+    "烹调"
+   ]
+  },
+  {
+   "char": "蛎",
+   "freq": 56.0,
+   "readings": [
+    "lì"
+   ],
+   "pairs": [
+    "l/n"
+   ],
+   "tags": [
+    "l"
+   ],
+   "example_words": [
+    "牡蛎"
+   ]
+  },
+  {
+   "char": "赁",
+   "freq": 55.0,
+   "readings": [
+    "lìn"
+   ],
+   "pairs": [
+    "in/ing",
+    "l/n"
+   ],
+   "tags": [
+    "in"
+   ],
+   "example_words": [
+    "租赁"
+   ]
+  },
+  {
+   "char": "骋",
+   "freq": 55.0,
+   "readings": [
+    "chěng"
+   ],
+   "pairs": [
+    "en/eng"
+   ],
+   "tags": [
+    "eng"
+   ],
+   "example_words": [
+    "驰骋"
+   ]
+  },
+  {
+   "char": "棱",
+   "freq": 55.0,
+   "readings": [
+    "léng"
+   ],
+   "pairs": [
+    "en/eng",
+    "l/n"
+   ],
+   "tags": [
+    "eng"
+   ],
+   "example_words": [
+    "棱镜"
+   ]
+  },
+  {
+   "char": "儡",
+   "freq": 54.0,
+   "readings": [
+    "lěi"
+   ],
+   "pairs": [
+    "l/n"
+   ],
+   "tags": [
+    "l"
+   ],
+   "example_words": [
+    "傀儡"
+   ]
+  },
+  {
+   "char": "皿",
+   "freq": 54.0,
+   "readings": [
+    "mǐn"
+   ],
+   "pairs": [
+    "in/ing"
+   ],
+   "tags": [
+    "in"
+   ],
+   "example_words": [
+    "器皿"
+   ]
+  },
+  {
+   "char": "唠",
+   "freq": 52.0,
+   "readings": [
+    "láo"
+   ],
+   "pairs": [
+    "l/n"
+   ],
+   "tags": [
+    "l"
+   ],
+   "example_words": [
+    "唠叨"
+   ]
+  },
+  {
+   "char": "砧",
+   "freq": 51.0,
+   "readings": [
+    "zhēn"
+   ],
+   "pairs": [
+    "en/eng"
+   ],
+   "tags": [
+    "en"
+   ],
+   "example_words": [
+    "砧木"
+   ]
+  },
+  {
+   "char": "缭",
+   "freq": 51.0,
+   "readings": [
+    "liáo"
+   ],
+   "pairs": [
+    "l/n"
+   ],
+   "tags": [
+    "l"
+   ],
+   "example_words": [
+    "眼花缭乱"
+   ]
+  },
+  {
+   "char": "濒",
+   "freq": 51.0,
+   "readings": [
+    "bīn"
+   ],
+   "pairs": [
+    "in/ing"
+   ],
+   "tags": [
+    "in"
+   ],
+   "example_words": [
+    "濒临"
+   ]
+  },
+  {
+   "char": "摒",
+   "freq": 51.0,
+   "readings": [
+    "bǐng"
+   ],
+   "pairs": [
+    "in/ing"
+   ],
+   "tags": [
+    "ing"
+   ],
+   "example_words": [
+    "摒弃"
+   ]
+  },
+  {
+   "char": "忱",
+   "freq": 51.0,
+   "readings": [
+    "chén"
+   ],
+   "pairs": [
+    "en/eng"
+   ],
+   "tags": [
+    "en"
+   ],
+   "example_words": [
+    "热忱"
+   ]
+  }
+ ]
+}

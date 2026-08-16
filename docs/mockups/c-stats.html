@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>统计 · 模糊音克星（方案 C 高保真稿）</title>
+<link rel="stylesheet" href="c-base.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-logo">拼</div>
+    <span class="brand-name">模糊音克星</span>
+  </div>
+  <nav>
+    <a href="c-home.html">练习</a>
+    <a href="c-stats.html" class="active">统计</a>
+    <a href="c-mastered.html">已掌握</a>
+    <a href="c-wrongbook.html">错题本</a>
+  </nav>
+  <div class="spacer"></div>
+  <div class="right">本地数据 · 自动保存</div>
+</header>
+
+<div class="layout">
+  <aside class="sider">
+    <a class="menu-item" href="c-home.html"><span class="menu-icon">▣</span>练习</a>
+    <a class="menu-item active" href="c-stats.html"><span class="menu-icon">▤</span>统计</a>
+    <a class="menu-item" href="c-mastered.html"><span class="menu-icon">✓</span>已掌握</a>
+    <a class="menu-item" href="c-wrongbook.html"><span class="menu-icon">✕</span>错题本</a>
+  </aside>
+
+  <main class="main">
+    <div class="page">
+      <div class="crumb">首页 <b>/ 统计</b></div>
+      <div class="row-between">
+        <div>
+          <h1 class="page-title">学习统计</h1>
+          <p class="page-desc" style="margin-bottom:0">追踪你的长期进步，数据仅保存在本机。</p>
+        </div>
+        <div class="segmented"><span class="active">7 天</span><span>30 天</span></div>
+      </div>
+
+      <div class="mt-5 stat-grid cols-4">
+        <div class="ant-card"><div class="card-body stat-card">
+          <div class="stat-label">总正确率</div>
+          <div class="stat-value">72<span class="unit">%</span></div>
+        </div></div>
+        <div class="ant-card"><div class="card-body stat-card">
+          <div class="stat-label">累计练习</div>
+          <div class="stat-value">186<span class="unit">题</span></div>
+        </div></div>
+        <div class="ant-card"><div class="card-body stat-card">
+          <div class="stat-label">连续打卡</div>
+          <div class="stat-value">3<span class="unit">天</span></div>
+        </div></div>
+        <div class="ant-card"><div class="card-body stat-card">
+          <div class="stat-label">已掌握</div>
+          <div class="stat-value">128<span class="unit">/ 600 字</span></div>
+        </div></div>
+      </div>
+
+      <div class="mt-5 grid-2">
+        <div class="ant-card chart-box">
+          <div class="chart-title">最近 7 天正确率趋势</div>
+          <svg viewBox="0 0 500 170" width="100%" role="img" aria-label="最近七天正确率折线图">
+            <line x1="30" y1="140" x2="480" y2="140" stroke="#F0F0F0" stroke-width="1"/>
+            <line x1="30" y1="95" x2="480" y2="95" stroke="#F0F0F0" stroke-width="1" stroke-dasharray="3 3"/>
+            <line x1="30" y1="50" x2="480" y2="50" stroke="#F0F0F0" stroke-width="1" stroke-dasharray="3 3"/>
+            <polyline points="45,118 118,105 190,122 262,86 335,74 408,60 480,44"
+                      fill="none" stroke="#1677FF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="480" cy="44" r="4" fill="#1677FF"/>
+            <text x="480" y="30" font-size="12" text-anchor="end" fill="#1677FF" font-weight="500">今天 82%</text>
+            <text x="45" y="156" font-size="11" fill="#A1A1AA" text-anchor="middle">周一</text>
+            <text x="118" y="156" font-size="11" fill="#A1A1AA" text-anchor="middle">周二</text>
+            <text x="190" y="156" font-size="11" fill="#A1A1AA" text-anchor="middle">周三</text>
+            <text x="262" y="156" font-size="11" fill="#A1A1AA" text-anchor="middle">周四</text>
+            <text x="335" y="156" font-size="11" fill="#A1A1AA" text-anchor="middle">周五</text>
+            <text x="408" y="156" font-size="11" fill="#A1A1AA" text-anchor="middle">周六</text>
+            <text x="480" y="156" font-size="11" fill="#A1A1AA" text-anchor="middle">周日</text>
+          </svg>
+          <div class="chart-legend"><span><i style="background:var(--primary)"></i>正确率</span></div>
+        </div>
+
+        <div class="ant-card chart-box">
+          <div class="chart-title">各音对正确率分布</div>
+          <div class="pair-stat">
+            <div class="row"><span><span class="ant-tag pair-in">in/ing</span></span><span class="right">72% · 138/192 字</span></div>
+            <div class="progress"><div class="bar pair-in" style="width:72%"></div></div>
+          </div>
+          <div class="pair-stat">
+            <div class="row"><span><span class="ant-tag pair-en">en/eng</span></span><span class="right">65% · 122/187 字</span></div>
+            <div class="progress"><div class="bar pair-en" style="width:65%"></div></div>
+          </div>
+          <div class="pair-stat">
+            <div class="row"><span><span class="ant-tag pair-ln">l/n</span></span><span class="right">58% · 147/253 字</span></div>
+            <div class="progress"><div class="bar pair-ln" style="width:58%"></div></div>
+          </div>
+          <div class="mt-4 ant-alert info">
+            <span>ℹ</span>
+            <span>交互说明：音对分布按「已练字数 / 该组总字数」统计，进度条颜色与音对色映射一致。</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

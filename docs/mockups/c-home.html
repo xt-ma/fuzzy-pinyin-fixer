@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>首页 · 模糊音克星（方案 C 高保真稿）</title>
+<link rel="stylesheet" href="c-base.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-logo">拼</div>
+    <span class="brand-name">模糊音克星</span>
+  </div>
+  <nav>
+    <a href="c-home.html" class="active">练习</a>
+    <a href="c-stats.html">统计</a>
+    <a href="c-mastered.html">已掌握</a>
+    <a href="c-wrongbook.html">错题本</a>
+  </nav>
+  <div class="spacer"></div>
+  <div class="right">v1.0 · 本地数据</div>
+</header>
+
+<div class="layout">
+  <aside class="sider">
+    <a class="menu-item active" href="c-home.html"><span class="menu-icon">▣</span>练习</a>
+    <a class="menu-item" href="c-stats.html"><span class="menu-icon">▤</span>统计</a>
+    <a class="menu-item" href="c-mastered.html"><span class="menu-icon">✓</span>已掌握</a>
+    <a class="menu-item" href="c-wrongbook.html"><span class="menu-icon">✕</span>错题本</a>
+  </aside>
+
+  <main class="main">
+    <div class="page">
+      <div class="crumb">首页 <b>/ 练习</b></div>
+      <h1 class="page-title">选择练习模式</h1>
+      <p class="page-desc">针对自己的薄弱音对专项训练，或直接综合随机。答对可标记「已掌握」，答错自动进入错题本。</p>
+
+      <div class="grid-4">
+        <div class="ant-card hoverable">
+          <div class="card-body pair-card">
+            <div class="pair-name" style="color:var(--pair-in)">in / ing</div>
+            <div class="pair-desc">前后鼻音 · 192 字</div>
+            <div class="pair-bar"><i style="width:72%;background:var(--pair-in)"></i></div>
+            <div class="pair-meta">正确率 72%</div>
+          </div>
+        </div>
+        <div class="ant-card hoverable">
+          <div class="card-body pair-card">
+            <div class="pair-name" style="color:var(--pair-en)">en / eng</div>
+            <div class="pair-desc">前后鼻音 · 187 字</div>
+            <div class="pair-bar"><i style="width:65%;background:var(--pair-en)"></i></div>
+            <div class="pair-meta">正确率 65%</div>
+          </div>
+        </div>
+        <div class="ant-card hoverable">
+          <div class="card-body pair-card">
+            <div class="pair-name" style="color:var(--pair-ln)">l / n</div>
+            <div class="pair-desc">边音鼻音 · 253 字</div>
+            <div class="pair-bar"><i style="width:58%;background:var(--pair-ln)"></i></div>
+            <div class="pair-meta">正确率 58%</div>
+          </div>
+        </div>
+        <div class="ant-card hoverable big">
+          <div class="card-body pair-card">
+            <div class="pair-name" style="color:var(--primary)">综合随机</div>
+            <div class="pair-desc">混合所有音对 · 600+ 字</div>
+            <div class="pair-bar"><i style="width:66%;background:var(--primary)"></i></div>
+            <div class="pair-meta" style="color:var(--primary)">推荐 · 每日一练</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 stat-grid cols-4">
+        <div class="ant-card"><div class="card-body stat-card">
+          <div class="stat-label">总正确率</div>
+          <div class="stat-value">72<span class="unit">%</span></div>
+        </div></div>
+        <div class="ant-card"><div class="card-body stat-card">
+          <div class="stat-label">7 天趋势</div>
+          <div class="stat-value"><span class="stat-delta up">+8%</span></div>
+        </div></div>
+        <div class="ant-card"><div class="card-body stat-card">
+          <div class="stat-label">音对分布</div>
+          <div class="stat-value">3<span class="unit">组</span></div>
+        </div></div>
+        <div class="ant-card"><div class="card-body stat-card">
+          <div class="stat-label">待重练错题</div>
+          <div class="stat-value">12<span class="unit">条</span></div>
+        </div></div>
+      </div>
+
+      <div class="mt-6 row-between">
+        <div style="display:flex;gap:12px">
+          <a class="ant-btn primary lg" href="c-quiz.html">开始综合练习</a>
+          <a class="ant-btn lg" href="c-wrongbook.html">错题重练</a>
+        </div>
+        <div class="segmented">
+          <span>5 题</span><span class="active">10 题</span><span>20 题</span>
+        </div>
+      </div>
+
+      <div class="mt-6 ant-card">
+        <div class="card-body">
+          <div class="row-between" style="margin-bottom:12px">
+            <span style="font-size:15px;font-weight:500">最近练习</span>
+            <span class="ant-tag blue">本地记录</span>
+          </div>
+          <table class="ant-table">
+            <thead><tr><th>时间</th><th>模式</th><th>题数</th><th>正确率</th><th>结果</th></tr></thead>
+            <tbody>
+              <tr><td>今天 22:40</td><td><span class="ant-tag pair-in">in/ing</span> 专项</td><td>10</td><td>80%</td><td><span class="ant-tag green">不错</span></td></tr>
+              <tr><td>今天 21:05</td><td>综合随机</td><td>10</td><td>70%</td><td><span class="ant-tag green">继续加油</span></td></tr>
+              <tr><td>昨天 20:30</td><td><span class="ant-tag pair-en">en/eng</span> 专项</td><td>10</td><td>60%</td><td><span class="ant-tag">需要巩固</span></td></tr>
+              <tr><td>昨天 19:12</td><td><span class="ant-tag pair-ln">l/n</span> 专项</td><td>5</td><td>80%</td><td><span class="ant-tag green">不错</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

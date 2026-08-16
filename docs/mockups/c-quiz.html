@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>答题页 · 模糊音克星（方案 C 高保真稿）</title>
+<link rel="stylesheet" href="c-base.css">
+<style>
+  .demo-note {
+    max-width: 720px; margin: 16px auto 0; font-size: 13px;
+    color: var(--text-3); text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-logo">拼</div>
+    <span class="brand-name">模糊音克星</span>
+  </div>
+  <nav>
+    <a href="c-home.html" class="active">练习</a>
+    <a href="c-stats.html">统计</a>
+    <a href="c-mastered.html">已掌握</a>
+    <a href="c-wrongbook.html">错题本</a>
+  </nav>
+  <div class="spacer"></div>
+  <div class="right">第 3 / 10 题</div>
+</header>
+
+<div class="layout">
+  <aside class="sider">
+    <a class="menu-item active" href="c-home.html"><span class="menu-icon">▣</span>练习</a>
+    <a class="menu-item" href="c-stats.html"><span class="menu-icon">▤</span>统计</a>
+    <a class="menu-item" href="c-mastered.html"><span class="menu-icon">✓</span>已掌握</a>
+    <a class="menu-item" href="c-wrongbook.html"><span class="menu-icon">✕</span>错题本</a>
+  </aside>
+
+  <main class="main">
+    <div class="quiz-toolbar">
+      <a class="ant-btn" href="c-home.html">‹ 返回</a>
+      <div class="quiz-progress-wrap">
+        <div class="quiz-progress-label"><span>in/ing 专项</span><span>3 / 10</span></div>
+        <div class="progress"><div class="bar" id="progressBar" style="width:30%"></div></div>
+      </div>
+      <span class="ant-tag pair-in">in / ing</span>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-hint">词语题 · 目标字「津」</div>
+      <div class="quiz-word">天<span class="target">津</span></div>
+      <div class="quiz-ask">请选择「津」的正确读音</div>
+
+      <div class="quiz-options">
+        <button class="quiz-option" id="optJin" onclick="answer('jin')">
+          jīn <span class="rhyme">in 韵母</span>
+        </button>
+        <button class="quiz-option" id="optJing" onclick="answer('jing')">
+          jīng <span class="rhyme">ing 韵母</span>
+        </button>
+      </div>
+
+      <div class="quiz-feedback" id="feedback" style="display:none">
+        <div class="ant-alert" id="feedbackAlert"></div>
+        <div class="quiz-actions" id="quizActions" style="display:none">
+          <a class="ant-btn primary" href="c-mastered.html">标记已掌握，不再出现</a>
+          <a class="ant-btn" href="c-wrongbook.html">查看错题本</a>
+        </div>
+      </div>
+      <div class="quiz-mastered-tip" id="nextTip" style="display:none">1 秒后自动进入下一题 · 点击「下一题」复位演示</div>
+      <div class="quiz-mastered-tip mt-2" style="display:none" id="resetRow">
+        <a class="ant-btn sm" onclick="resetDemo()">下一题（复位演示）</a>
+      </div>
+    </div>
+
+    <div class="demo-note">交互说明：点击两个选项之一即可看到「答对（绿）/ 答错（红）+ 差异韵母高亮」的真实反馈流程；本页为高保真交互稿，产品实现时 1 秒后自动进入下一题。</div>
+  </main>
+</div>
+
+<script>
+let answered = false;
+function answer(choice) {
+  if (answered) return;
+  answered = true;
+  const optJin = document.getElementById('optJin');
+  const optJing = document.getElementById('optJing');
+  const fb = document.getElementById('feedback');
+  const alertEl = document.getElementById('feedbackAlert');
+  const actions = document.getElementById('quizActions');
+  const tip = document.getElementById('nextTip');
+  const resetRow = document.getElementById('resetRow');
+  const bar = document.getElementById('progressBar');
+
+  if (choice === 'jin') {
+    optJin.classList.add('ok');
+    optJing.classList.add('bad');
+    alertEl.className = 'ant-alert success';
+    alertEl.innerHTML = '<span>✔</span><span><b>回答正确！</b>in 是前鼻音（舌尖抵上齿龈），ing 是后鼻音（舌根抬起）。差异点在韵母 <b>n / ng</b>。</span>';
+    actions.innerHTML = '<a class="ant-btn primary" href="c-mastered.html">标记已掌握，不再出现</a><a class="ant-btn" onclick="resetDemo()">跳过</a>';
+  } else {
+    optJin.classList.add('ok');
+    optJing.classList.add('bad');
+    alertEl.className = 'ant-alert error';
+    alertEl.innerHTML = '<span>✘</span><span><b>回答错误</b>，正确读音为 <b>jīn</b>（in 前鼻音）。该字已自动加入错题本。</span>';
+    actions.innerHTML = '<a class="ant-btn primary" href="c-wrongbook.html">查看错题本</a><a class="ant-btn" onclick="resetDemo()">继续下一题</a>';
+  }
+  fb.style.display = 'block';
+  actions.style.display = 'flex';
+  tip.style.display = 'block';
+  resetRow.style.display = 'block';
+  bar.style.width = '40%';
+}
+function resetDemo() {
+  answered = false;
+  document.getElementById('optJin').className = 'quiz-option';
+  document.getElementById('optJing').className = 'quiz-option';
+  document.getElementById('feedback').style.display = 'none';
+  document.getElementById('quizActions').style.display = 'none';
+  document.getElementById('nextTip').style.display = 'none';
+  document.getElementById('resetRow').style.display = 'none';
+  document.getElementById('progressBar').style.width = '30%';
+}
+</script>
+
+</body>
+</html>

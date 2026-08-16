@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>模糊音克星 · 纠正方言模糊音</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand" onclick="App.show('home')" style="cursor:pointer">
+    <div class="brand-logo">拼</div>
+    <span class="brand-name">模糊音克星</span>
+  </div>
+  <nav id="topNav">
+    <a data-view="home" class="active">练习</a>
+    <a data-view="stats">统计</a>
+    <a data-view="mastered">已掌握</a>
+    <a data-view="wrongbook">错题本</a>
+    <a data-view="settings">设置</a>
+  </nav>
+  <div class="spacer"></div>
+  <div class="right" id="topRight">v1.0 · 本地数据</div>
+</header>
+
+<div class="layout">
+  <aside class="sider" id="sider">
+    <a class="menu-item active" data-view="home"><span class="menu-icon">▣</span>练习</a>
+    <a class="menu-item" data-view="stats"><span class="menu-icon">▤</span>统计</a>
+    <a class="menu-item" data-view="mastered"><span class="menu-icon">✓</span>已掌握</a>
+    <a class="menu-item" data-view="wrongbook"><span class="menu-icon">✕</span>错题本</a>
+    <a class="menu-item" data-view="settings"><span class="menu-icon">⚙</span>设置</a>
+  </aside>
+
+  <main class="main">
+    <!-- 首页：练习模式选择 -->
+    <div class="view active" id="view-home">
+      <div class="page">
+        <div class="crumb">首页 <b>/ 练习</b></div>
+        <h1 class="page-title">选择练习模式</h1>
+        <p class="page-desc">针对自己的薄弱音对专项训练，或直接综合随机。答对可标记「已掌握」，答错自动进入错题本。</p>
+        <div id="homePairCards" class="grid-4"></div>
+        <div class="mt-6 stat-grid cols-4" id="homeStats"></div>
+        <div class="mt-6 row-between" id="homeActions"></div>
+        <div class="mt-6 ant-card" id="homeRecent"></div>
+      </div>
+    </div>
+
+    <!-- 答题页 -->
+    <div class="view" id="view-quiz">
+      <div class="quiz-toolbar">
+        <div class="quiz-toolbar-left">
+          <a class="ant-btn" id="btnQuitQuiz" onclick="App.quitQuiz()">‹ 返回</a>
+          <button class="ant-btn" id="btnPrev" onclick="App.prevQuestion()" disabled title="快捷键 ←">‹ 上一题</button>
+          <button class="ant-btn" id="btnResume" onclick="App.resumeLatest()" style="display:none">继续作答 ›</button>
+        </div>
+        <div class="quiz-progress-wrap">
+          <div class="quiz-progress-label"><span id="quizModeLabel"></span><span id="quizProgressText"></span></div>
+          <div class="progress"><div class="bar" id="quizProgressBar" style="width:0%"></div></div>
+        </div>
+        <span class="ant-tag" id="quizPairTag"></span>
+        <button class="ant-btn" id="btnMasteredTop" onclick="App.toggleMastered()">已掌握</button>
+      </div>
+      <div class="quiz-card" id="quizCard"></div>
+      <div class="quiz-keyhint" id="quizKeyHint">键盘：按 1 / 2 直接作答</div>
+    </div>
+
+    <!-- 轮末复盘 -->
+    <div class="view" id="view-result">
+      <div class="page">
+        <div class="crumb">练习 <b>/ 轮末复盘</b></div>
+        <div id="resultBody"></div>
+      </div>
+    </div>
+
+    <!-- 统计 -->
+    <div class="view" id="view-stats">
+      <div class="page">
+        <div class="crumb">首页 <b>/ 统计</b></div>
+        <div class="row-between">
+          <div>
+            <h1 class="page-title">学习统计</h1>
+            <p class="page-desc" style="margin-bottom:0">追踪你的长期进步，数据仅保存在本机。</p>
+          </div>
+          <div class="segmented" id="statsRange">
+            <span data-range="7" class="active">7 天</span>
+            <span data-range="30">30 天</span>
+          </div>
+        </div>
+        <div class="mt-5 stat-grid cols-4" id="statsCards"></div>
+        <div class="mt-5 grid-2" id="statsCharts"></div>
+      </div>
+    </div>
+
+    <!-- 已掌握 -->
+    <div class="view" id="view-mastered">
+      <div class="page">
+        <div class="crumb">首页 <b>/ 已掌握</b></div>
+        <div class="row-between">
+          <div>
+            <h1 class="page-title">已掌握字库</h1>
+            <p class="page-desc" style="margin-bottom:0">已掌握的字不再出现在出题池中；误标记可随时撤回。</p>
+          </div>
+          <input class="ant-input" id="masteredSearch" placeholder="搜索字或词语…">
+        </div>
+        <div id="masteredBody"></div>
+      </div>
+    </div>
+
+    <!-- 错题本 -->
+    <div class="view" id="view-wrongbook">
+      <div class="page">
+        <div class="crumb">首页 <b>/ 错题本</b></div>
+        <div class="row-between">
+          <div>
+            <h1 class="page-title">错题本</h1>
+            <p class="page-desc" style="margin-bottom:0">答错的字自动累积在此，去重保存；集中重练直到掌握。</p>
+          </div>
+          <div id="wrongbookAction"></div>
+        </div>
+        <div id="wrongbookBody"></div>
+      </div>
+    </div>
+
+    <!-- 设置 -->
+    <div class="view" id="view-settings">
+      <div class="page">
+        <div class="crumb">首页 <b>/ 设置</b></div>
+        <h1 class="page-title">设置与数据</h1>
+        <p class="page-desc">数据全部保存在本机浏览器中。导出备份文件（可放入坚果云等同步盘）即可在另一台设备导入，继续之前的进度。</p>
+
+        <div class="ant-card mt-5">
+          <div class="card-body">
+            <div class="settings-section-title">数据概况</div>
+            <div class="stat-grid cols-4" id="settingsStats"></div>
+          </div>
+        </div>
+
+        <div class="ant-card mt-5">
+          <div class="card-body">
+            <div class="settings-section-title">云同步（自动）</div>
+            <div class="row-between">
+              <div>
+                <div class="settings-item-title">自动云同步</div>
+                <div class="settings-item-desc">数据自动备份到云端，多设备无感同步。开启后自动生成同步密钥。</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="syncToggle">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div id="syncPanel" class="mt-4" style="display:none">
+              <div class="mt-3">
+                <div class="settings-item-title">同步服务器地址</div>
+                <div class="settings-item-desc">你的 Cloudflare Worker 地址（部署流程见 docs/deploy-cloudflare.md）。</div>
+                <input class="ant-input" id="syncServer" placeholder="https://fpf-sync.你的用户名.workers.dev" style="margin-top:6px">
+              </div>
+              <div class="mt-3">
+                <div class="settings-item-title">同步密钥</div>
+                <div class="settings-item-desc" id="syncKeyDesc">设备间填入同一密钥即共享同一份进度（公司/家里电脑填同一个）。</div>
+                <div id="syncKeyBox" class="sync-key-box" style="display:none"></div>
+                <div class="mt-3">
+                  <button class="ant-btn" id="btnCopyKey">复制密钥</button>
+                  <button class="ant-btn" id="btnResetKey">重置密钥</button>
+                  <span class="ant-tag" id="syncStatus" style="margin-left:8px">未同步</span>
+                </div>
+              </div>
+            </div>
+            <div class="mt-4 ant-alert info" id="syncHint"></div>
+          </div>
+        </div>
+
+        <div class="ant-card mt-5">
+          <div class="card-body">
+            <div class="settings-section-title">记忆调度（FSRS）</div>
+            <div class="row-between">
+              <div>
+                <div class="settings-item-title">智能复习</div>
+                <div class="settings-item-desc">按记忆曲线安排复习：到期的字优先出现，生疏的字复习更频繁、熟练的字间隔拉长。关闭则回到纯随机出题。</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="fsrsToggle">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="mt-4 ant-alert info" id="fsrsStatus"></div>
+          </div>
+        </div>
+
+        <div class="ant-card mt-5">
+          <div class="card-body">
+            <div class="settings-section-title">备份与迁移</div>
+            <div class="row-between" style="margin-bottom:var(--sp-3)">
+              <div>
+                <div class="settings-item-title">导出数据</div>
+                <div class="settings-item-desc">打包全部学习记录为 JSON 文件，可在任意设备导入恢复。</div>
+              </div>
+              <button class="ant-btn primary" onclick="App.exportData()">导出备份</button>
+            </div>
+            <div class="row-between">
+              <div>
+                <div class="settings-item-title">导入数据</div>
+                <div class="settings-item-desc">从备份文件恢复；与本地已有数据<b>合并</b>，不会覆盖丢失。</div>
+              </div>
+              <button class="ant-btn" onclick="App.pickImportFile()">选择文件导入</button>
+            </div>
+            <input type="file" id="importFileInput" accept=".json,application/json" style="display:none">
+          </div>
+        </div>
+
+        <div class="ant-card mt-5">
+          <div class="card-body">
+            <div class="settings-section-title">使用提示</div>
+            <ul class="settings-tips">
+              <li>数据存于本浏览器，清除浏览器数据会一并删除——请定期导出备份。</li>
+              <li>多设备同步：把导出文件放入坚果云同步文件夹，另一台设备导入即可；两端数据会自动合并。</li>
+              <li>答题流水（对/错每次作答）与字卡状态都会完整备份，供记忆模型使用。</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="data/words.js"></script>
+<script src="js/fsrs.js"></script>
+<script src="js/store.js"></script>
+<script src="js/sync.js"></script>
+<script src="js/quiz.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

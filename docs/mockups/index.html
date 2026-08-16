@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>模糊音克星 · 方案 C 高保真稿总览</title>
+<link rel="stylesheet" href="c-base.css">
+<style>
+  .hero { text-align: center; padding: 48px 24px 32px; }
+  .hero h1 { font-size: 28px; font-weight: 600; margin: 0 0 8px; }
+  .hero p { color: var(--text-2); margin: 0; }
+  .hero .badge-wrap { display: flex; justify-content: center; gap: 8px; margin-top: 16px; }
+  .page-link {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 20px; border: 1px solid var(--border-split); border-radius: var(--r-lg);
+    background: var(--surface); text-decoration: none; color: var(--text);
+    margin-bottom: 12px; transition: all 0.2s;
+  }
+  .page-link:hover { border-color: var(--primary); box-shadow: var(--shadow-2); transform: translateY(-1px); }
+  .page-link .t { font-size: 15px; font-weight: 500; }
+  .page-link .d { font-size: 13px; color: var(--text-2); margin-top: 2px; }
+  .page-link .go { color: var(--primary); font-size: 18px; }
+  .token-group { margin-bottom: 20px; }
+  .token-group h3 { font-size: 14px; font-weight: 500; margin: 0 0 10px; }
+  .swatches { display: flex; gap: 10px; flex-wrap: wrap; }
+  .swatch { text-align: center; }
+  .swatch .c { width: 64px; height: 44px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.08); }
+  .swatch .n { font-size: 11px; color: var(--text-2); margin-top: 4px; font-family: ui-monospace, monospace; }
+  .note { font-size: 13px; color: var(--text-2); margin-top: 24px; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>模糊音克星 · 方案 C 高保真稿总览</h1>
+  <p>Ant Design 稳重大众 · 桌面端 · 唯一选定风格</p>
+  <div class="badge-wrap">
+    <span class="ant-tag blue">主色 #1677FF</span>
+    <span class="ant-tag pair-in">in/ing 橙</span>
+    <span class="ant-tag pair-en">en/eng 紫</span>
+    <span class="ant-tag pair-ln">l/n 青</span>
+  </div>
+</div>
+
+<div class="layout" style="min-height:auto">
+  <main class="main" style="padding-top:0">
+    <div class="page">
+
+      <div class="token-group">
+        <h3>六个主要页面（点击进入高保真稿）</h3>
+        <a class="page-link" href="c-home.html">
+          <div><div class="t">首页 · 练习模式选择</div><div class="d">音对卡片 + 统计概览 + 最近练习 + 题量切换</div></div>
+          <span class="go">→</span>
+        </a>
+        <a class="page-link" href="c-quiz.html">
+          <div><div class="t">答题页 · 核心交互</div><div class="d">词语展示 + 目标字高亮 + 二选一 + 对/错反馈（可点击演示）</div></div>
+          <span class="go">→</span>
+        </a>
+        <a class="page-link" href="c-result.html">
+          <div><div class="t">轮末复盘</div><div class="d">正确率大数字 + 错题清单 + 错题重练 / 再练一轮</div></div>
+          <span class="go">→</span>
+        </a>
+        <a class="page-link" href="c-stats.html">
+          <div><div class="t">统计</div><div class="d">总正确率 + 7 天趋势折线 + 音对分布进度</div></div>
+          <span class="go">→</span>
+        </a>
+        <a class="page-link" href="c-mastered.html">
+          <div><div class="t">已掌握管理</div><div class="d">掌握进度 + 字表 + 音对筛选 + 撤回</div></div>
+          <span class="go">→</span>
+        </a>
+        <a class="page-link" href="c-wrongbook.html">
+          <div><div class="t">错题本</div><div class="d">去重错题表 + 出错次数 + 一键重练</div></div>
+          <span class="go">→</span>
+        </a>
+      </div>
+
+      <div class="token-group">
+        <h3>核心设计 Tokens（完整版见 docs/design-spec.md）</h3>
+        <div class="swatches">
+          <div class="swatch"><div class="c" style="background:#1677FF"></div><div class="n">#1677FF 主色</div></div>
+          <div class="swatch"><div class="c" style="background:#001529"></div><div class="n">#001529 顶栏</div></div>
+          <div class="swatch"><div class="c" style="background:#F5F5F5"></div><div class="n">#F5F5F5 页面底</div></div>
+          <div class="swatch"><div class="c" style="background:#F97316"></div><div class="n">#F97316 in/ing</div></div>
+          <div class="swatch"><div class="c" style="background:#8B5CF6"></div><div class="n">#8B5CF6 en/eng</div></div>
+          <div class="swatch"><div class="c" style="background:#14B8A6"></div><div class="n">#14B8A6 l/n</div></div>
+          <div class="swatch"><div class="c" style="background:#52C41A"></div><div class="n">#52C41A 答对</div></div>
+          <div class="swatch"><div class="c" style="background:#FF4D4F"></div><div class="n">#FF4D4F 答错</div></div>
+        </div>
+      </div>
+
+      <div class="note">
+        字体：-apple-system / Segoe UI / PingFang SC / Microsoft YaHei（antd 默认栈）· 间距：4px 网格 · 圆角：按钮 6px / 卡片 8px<br>
+        设计规范与标注：<a href="../design-spec.md" style="color:var(--primary)">docs/design-spec.md</a> ｜ 线框参考：<a href="style-c-desktop.svg" style="color:var(--primary)">style-c-desktop.svg</a>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

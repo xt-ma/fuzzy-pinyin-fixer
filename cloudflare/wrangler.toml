@@ -1,0 +1,11 @@
+# 模糊音克星 · Cloudflare Worker 配置
+# 部署：npm install wrangler → wrangler login → 创建 KV → wrangler deploy
+# KV 命名空间：wrangler kv namespace create FPF_SYNC（把输出的 id 填到下方）
+name = "fuzzy-pinyin-fixer-sync"
+main = "index.js"
+compatibility_date = "2024-11-01"
+
+# 生产环境 KV 绑定（变量名 FPF_SYNC 与 index.js 中 env.FPF_SYNC 对应）
+[[kv_namespaces]]
+binding = "FPF_SYNC"
+id = "在此填写你的 KV 命名空间 ID（wrangler kv namespace create 的输出）"

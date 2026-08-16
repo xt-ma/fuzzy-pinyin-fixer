@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>已掌握 · 模糊音克星（方案 C 高保真稿）</title>
+<link rel="stylesheet" href="c-base.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-logo">拼</div>
+    <span class="brand-name">模糊音克星</span>
+  </div>
+  <nav>
+    <a href="c-home.html">练习</a>
+    <a href="c-stats.html">统计</a>
+    <a href="c-mastered.html" class="active">已掌握</a>
+    <a href="c-wrongbook.html">错题本</a>
+  </nav>
+  <div class="spacer"></div>
+  <div class="right">本地数据</div>
+</header>
+
+<div class="layout">
+  <aside class="sider">
+    <a class="menu-item" href="c-home.html"><span class="menu-icon">▣</span>练习</a>
+    <a class="menu-item" href="c-stats.html"><span class="menu-icon">▤</span>统计</a>
+    <a class="menu-item active" href="c-mastered.html"><span class="menu-icon">✓</span>已掌握</a>
+    <a class="menu-item" href="c-wrongbook.html"><span class="menu-icon">✕</span>错题本</a>
+  </aside>
+
+  <main class="main">
+    <div class="page">
+      <div class="crumb">首页 <b>/ 已掌握</b></div>
+      <div class="row-between">
+        <div>
+          <h1 class="page-title">已掌握字库</h1>
+          <p class="page-desc" style="margin-bottom:0">已掌握的字不再出现在出题池中；误标记可随时撤回。</p>
+        </div>
+        <input class="ant-input" placeholder="搜索字或词语…">
+      </div>
+
+      <div class="mt-5 ant-card">
+        <div class="card-body">
+          <div class="row-between" style="margin-bottom:12px">
+            <span style="font-size:15px;font-weight:500">共 128 字已掌握</span>
+            <span class="ant-tag blue">约 21% 已认全</span>
+          </div>
+          <div class="progress" style="margin-bottom:16px"><div class="bar" style="width:21%"></div></div>
+          <div style="display:flex;gap:8px;margin-bottom:16px">
+            <span class="ant-tag blue" style="cursor:pointer">全部</span>
+            <span class="ant-tag pair-in" style="cursor:pointer">in/ing</span>
+            <span class="ant-tag pair-en" style="cursor:pointer">en/eng</span>
+            <span class="ant-tag pair-ln" style="cursor:pointer">l/n</span>
+          </div>
+          <table class="ant-table">
+            <thead><tr><th>字</th><th>词语</th><th>音对</th><th>正确读音</th><th>掌握时间</th><th>操作</th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="word-cell">津</td><td>天津</td>
+                <td><span class="ant-tag pair-in">in/ing</span></td>
+                <td><b>jīn</b></td><td>2026-08-15 22:41</td>
+                <td class="ops"><a onclick="alert('已从掌握列表移除，该字将重新参与出题（演示）')">撤回</a></td>
+              </tr>
+              <tr>
+                <td class="word-cell">宁</td><td>安宁</td>
+                <td><span class="ant-tag pair-in">in/ing</span></td>
+                <td><b>níng</b></td><td>2026-08-15 22:30</td>
+                <td class="ops"><a onclick="alert('已从掌握列表移除，该字将重新参与出题（演示）')">撤回</a></td>
+              </tr>
+              <tr>
+                <td class="word-cell">层</td><td>楼层</td>
+                <td><span class="ant-tag pair-en">en/eng</span></td>
+                <td><b>céng</b></td><td>2026-08-15 21:10</td>
+                <td class="ops"><a onclick="alert('已从掌握列表移除，该字将重新参与出题（演示）')">撤回</a></td>
+              </tr>
+              <tr>
+                <td class="word-cell">冷</td><td>寒冷</td>
+                <td><span class="ant-tag pair-en">en/eng</span></td>
+                <td><b>lěng</b></td><td>2026-08-14 20:33</td>
+                <td class="ops"><a onclick="alert('已从掌握列表移除，该字将重新参与出题（演示）')">撤回</a></td>
+              </tr>
+              <tr>
+                <td class="word-cell">老</td><td>老师</td>
+                <td><span class="ant-tag pair-ln">l/n</span></td>
+                <td><b>lǎo</b></td><td>2026-08-14 19:12</td>
+                <td class="ops"><a onclick="alert('已从掌握列表移除，该字将重新参与出题（演示）')">撤回</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="mt-5 ant-alert info">
+        <span>ℹ</span>
+        <span>交互说明：「撤回」需二次确认（Popconfirm）防止误操作；撤回后该字立即回到出题池，并显示在首页对应音对卡中。</span>
+      </div>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

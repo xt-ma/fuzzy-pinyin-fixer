@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>中文多音字「前/后鼻音」与「n/l」同时存在的穷举论证</title>
+<style>
+:root{--bg:#f7f8fa;--card:#fff;--ink:#1f2329;--mut:#6b7280;--line:#e6e8eb;--accent:#F97316;--pur:#8B5CF6;--teal:#14B8A6;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"PingFang SC","Microsoft YaHei",Segoe UI,Roboto,sans-serif;line-height:1.65}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 20px 64px}
+h1{font-size:26px;margin:0 0 4px}
+.sub{color:var(--mut);font-size:14px;margin-bottom:22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:16px 0;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.card h2{font-size:19px;margin:0 0 12px;display:flex;align-items:center;gap:8px}
+.tag{font-size:12px;padding:2px 9px;border-radius:999px;background:#fff3e9;color:var(--accent);font-weight:600}
+.kpis{display:flex;flex-wrap:wrap;gap:14px;margin:6px 0 2px}
+.kpi{flex:1;min-width:150px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.kpi .n{font-size:30px;font-weight:700;color:var(--accent)}
+.kpi .l{font-size:13px;color:var(--mut);margin-top:2px}
+.kpi.teal .n{color:var(--teal)} .kpi.pur .n{color:var(--pur)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{border-bottom:1px solid var(--line);padding:9px 10px;text-align:left;vertical-align:top}
+th{background:#fafbfc;color:var(--mut);font-weight:600;font-size:12.5px;position:sticky;top:0}
+td.ch{font-size:19px;font-weight:600;white-space:nowrap}
+td.py{font-family:"SFMono-Regular",Consolas,monospace;color:#b3541e;white-space:nowrap}
+td.ex{color:#374151}
+td.pair{color:var(--pur);white-space:nowrap;font-weight:600}
+td.note{color:var(--mut);font-size:12.5px}
+.badge{font-size:11.5px;padding:2px 8px;border-radius:999px;font-weight:600}
+.b-common{background:#e7f7ee;color:#0a8a4a} .b-mid{background:#fff4e0;color:#b8770a} .b-rare{background:#f1f2f4;color:#6b7280}
+.blab{font-size:13px;fill:#374151} .bval{font-size:14px;fill:#1f2329;font-weight:700}
+.method{font-size:13.5px;color:#374151}
+.method li{margin:4px 0}
+.note-box{background:#fff8ef;border:1px solid #ffe2c4;border-radius:10px;padding:12px 14px;font-size:13.5px;color:#7a4a16;margin-top:10px}
+.footer{color:var(--mut);font-size:12.5px;margin-top:26px;line-height:1.7}
+code{background:#f1f2f4;padding:1px 5px;border-radius:4px;font-size:12.5px}
+</style></head>
+<body><div class="wrap">
+
+<h1>中文多音字「前鼻音 / 后鼻音」与「n / l」同时存在的穷举论证</h1>
+<div class="sub">数据源：pypinyin 拼音字典（≈《通用规范汉字表》8105 字）+《25 亿字语料频率表》常用字全集（14975 字）｜ 穷举方法：遍历每个字的全部异读，判定「仅鼻音韵尾 n/ng 不同」的最小对立对，以及「声母 n/l 并存」。</div>
+
+<div class="kpis">
+  <div class="kpi"><div class="n">28</div><div class="l">前/后鼻音对立字形（元音+鼻音韵尾）</div></div>
+  <div class="kpi pur"><div class="n">15</div><div class="l">去重后的读音类型（韵母对）</div></div>
+  <div class="kpi teal"><div class="n">7</div><div class="l">n / l 双声母多音字字形</div></div>
+  <div class="kpi"><div class="n">4</div><div class="l">纯鼻音音节叹词（ń/ńg 类）</div></div>
+</div>
+
+<div class="card">
+  <h2><span class="tag">结论</span> 是否存在？—— 确实存在，且可穷举</h2>
+  <p style="margin:6px 0 0;font-size:14.5px">① <b>前鼻音与后鼻音（in/ing、en/eng、an/ang、ian/iang）同时存在于同一多音字</b>的现象不仅存在，而且在《通用规范汉字》常用字范围内共有 <b>28 个字形</b>，去重为 <b>15 种读音类型</b>。最常见者即你举的 <b>劲(jìn/jìng)、亲(qīn/qìng)、称(chèn/chēng)、胖(pán/pàng)</b>。<br>
+  ② <b>鼻音 n 与边音 l 同时存在于同一多音字</b>的现象也存在，但极为稀少：常用字中仅 <b>弄(nòng/lòng)</b> 一个干净、日常的案例；其余若干均为生僻或异读字。</p>
+</div>
+
+<div class="card">
+  <h2>一、前鼻音 / 后鼻音同时存在的多音字（按韵母对分布）</h2>
+  <svg width="100%" viewBox="0 0 720 204" style="max-width:720px;margin:6px 0 4px"><text x="0" y="38" class="blab">an / ang</text><rect x="110" y="20" width="60" height="26" rx="5" fill="#F97316"></rect><text x="180" y="39" class="bval">2</text><text x="0" y="84" class="blab">en / eng</text><rect x="110" y="66" width="330" height="26" rx="5" fill="#F97316"></rect><text x="450" y="85" class="bval">11</text><text x="0" y="130" class="blab">in / ing</text><rect x="110" y="112" width="420" height="26" rx="5" fill="#F97316"></rect><text x="540" y="131" class="bval">14</text><text x="0" y="176" class="blab">ian / iang</text><rect x="110" y="158" width="30" height="26" rx="5" fill="#F97316"></rect><text x="150" y="177" class="bval">1</text></svg>
+  <div class="note-box">说明：<code>uan/uang</code> 在常用字中没有任何一字同时具备两读（计为 0）。上图仅统计「元音 + 鼻音韵尾」类；<code>in/ing</code> 最丰富（14 字），<code>en/eng</code> 次之（11 字）。</div>
+  <table style="margin-top:12px"><thead><tr>
+    <th>汉字（含繁/异体）</th><th>前鼻音读音</th><th>例词</th><th>后鼻音读音</th><th>例词</th><th>韵母对</th><th>常见度</th><th>备注</th>
+  </tr></thead><tbody>
+  <tr>
+<td class="ch">並</td>
+<td class="py">bàn</td>
+<td class="ex">（bàn 生僻异读）</td>
+<td class="py">bàng</td>
+<td class="ex">（bàng 生僻，多用于姓氏/地名）</td>
+<td class="pair">an / ang</td>
+<td><span class="badge b-mid">次常用</span></td>
+<td class="note">简化字「并」日常读 bìng；bàn/bàng 为罕见异读</td>
+</tr>
+<tr>
+<td class="ch">胖</td>
+<td class="py">pán</td>
+<td class="ex">心宽体胖（pán）</td>
+<td class="py">pàng</td>
+<td class="ex">胖子、小胖</td>
+<td class="pair">an / ang</td>
+<td><span class="badge b-common">常用</span></td>
+<td class="note">前鼻音极生僻，后鼻音常用</td>
+</tr>
+<tr>
+<td class="ch">亘、亙</td>
+<td class="py">gèn</td>
+<td class="ex">亘古（gèn）</td>
+<td class="py">gèng</td>
+<td class="ex">（gèng，生僻）</td>
+<td class="pair">en / eng</td>
+<td><span class="badge b-mid">次常用</span></td>
+<td class="note">亘/亙，生僻异读</td>
+</tr>
+<tr>
+<td class="ch">佷</td>
+<td class="py">hěn</td>
+<td class="ex">（hěn，生僻）</td>
+<td class="py">héng</td>
+<td class="ex">（héng，生僻）</td>
+<td class="pair">en / eng</td>
+<td><span class="badge b-mid">次常用</span></td>
+<td class="note">佷，生僻字</td>
+</tr>
+<tr>
+<td class="ch">帧、禎、貞、偵</td>
+<td class="py">zhēn</td>
+<td class="ex">侦查、贞节（zhēn）</td>
+<td class="py">zhēng</td>
+<td class="ex">装帧（zhèng，用于「帧」）</td>
+<td class="pair">en / eng</td>
+<td><span class="badge b-mid">次常用</span></td>
+<td class="note">侦/贞/祯/帧 共享 zhēn/zhēng；zhèng 仅「帧」常见</td>
+</tr>
+<tr>
+<td class="ch">硍</td>
+<td class="py">kèn</td>
+<td class="ex">（kèn，生僻）</td>
+<td class="py">kēng</td>
+<td class="ex">（kēng，生僻）</td>
+<td class="pair">en / eng</td>
+<td><span class="badge b-rare">生僻</span></td>
+<td class="note">硍，生僻字</td>
+</tr>
+<tr>
+<td class="ch">称、橙、稱</td>
+<td class="py">chèn</td>
+<td class="ex">对称、对称性、匀称</td>
+<td class="py">chēng</td>
+<td class="ex">称为、名称、称之为</td>
+<td class="pair">en / eng</td>
+<td><span class="badge b-common">常用</span></td>
+<td class="note">称/橙 共享 chèn/chéng；橙的 chén 生僻</td>
+</tr>
+<tr>
+<td class="ch">亲、親</td>
+<td class="py">qīn</td>
+<td class="ex">母亲、父亲、亲自</td>
+<td class="py">qìng</td>
+<td class="ex">亲家</td>
+<td class="pair">in / ing</td>
+<td><span class="badge b-common">常用</span></td>
+<td class="note">前鼻音常用，后鼻音仅「亲家」系</td>
+</tr>
+<tr>
+<td class="ch">劲、勁</td>
+<td class="py">jìn</td>
+<td class="ex">使劲、劲头、干劲</td>
+<td class="py">jìng</td>
+<td class="ex">刚劲、劲敌（jìng）</td>
+<td class="pair">in / ing</td>
+<td><span class="badge b-common">常用</span></td>
+<td class="note">前鼻音常用，后鼻音多用于「刚劲/劲敌」等书面语</td>
+</tr>
+<tr>
+<td class="ch">拎、磷、魿</td>
+<td class="py">lín</td>
+<td class="ex">拎包（līn）、磷酸（lín）</td>
+<td class="py">líng</td>
+<td class="ex">（líng，生僻）</td>
+<td class="pair">in / ing</td>
+<td><span class="badge b-common">常用</span></td>
+<td class="note">拎/磷/魿 共享 lín/líng；líng 极生僻</td>
+</tr>
+<tr>
+<td class="ch">槟、檳</td>
+<td class="py">bīn</td>
+<td class="ex">槟子（bīn）</td>
+<td class="py">bīng</td>
+<td class="ex">槟榔（bīng）</td>
+<td class="pair">in / ing</td>
+<td><span class="badge b-mid">次常用</span></td>
+<td class="note">槟/檳，两读皆常用（南北异读）</td>
+</tr>
+<tr>
+<td class="ch">皿</td>
+<td class="py">mǐn</td>
+<td class="ex">器皿</td>
+<td class="py">mǐng</td>
+<td class="ex">（mǐng，生僻）</td>
+<td class="pair">in / ing</td>
+<td><span class="badge b-mid">次常用</span></td>
+<td class="note">皿，前鼻音常用</td>
+</tr>
+<tr>
+<td class="ch">聘、娉、蘋</td>
+<td class="py">pín</td>
+<td class="ex">聘请</td>
+<td class="py">píng</td>
+<td class="ex">娉婷（pīng）、苹果（蘋 píng）</td>
+<td class="pair">in / ing</td>
+<td><span class="badge b-common">常用</span></td>
+<td class="note">聘/娉/蘋 共享 pìn/píng</td>
+</tr>
+<tr>
+<td class="ch">興</td>
+<td class="py">xìn</td>
+<td class="ex">（xìn 通「衅」，生僻）</td>
+<td class="py">xìng</td>
+<td class="ex">高兴、兴趣、兴奋、兴办（xìng/xīng）</td>
+<td class="pair">in / ing</td>
+<td><span class="badge b-mid">次常用</span></td>
+<td class="note">兴/興，xìn 为罕见通假读</td>
+</tr>
+<tr>
+<td class="ch">羥</td>
+<td class="py">qiān</td>
+<td class="ex">（qiān，生僻）</td>
+<td class="py">qiǎng</td>
+<td class="ex">羟基（qiǎng）</td>
+<td class="pair">ian / iang</td>
+<td><span class="badge b-rare">生僻</span></td>
+<td class="note">羥，化学用字</td>
+</tr>
+  </tbody></table>
+  <p style="font-size:12.5px;color:var(--mut);margin-top:10px">注：同一读音类型下的繁体/异体字形（如 亲/親、劲/勁、称/稱）已合并为一行；「例词」来自《现代汉语语料库词频表》频率序，缺者据音义补（多为生僻异读，无常用词）。</p>
+</div>
+
+<div class="card">
+  <h2>附：纯鼻音音节叹词（另一类「前/后鼻音并存」）</h2>
+  <p style="font-size:13.5px;color:#374151;margin:0 0 8px">除上述「元音 + 鼻音韵尾」外，还有 4 个叹词/应答字本身读音就是<b>自成音节的鼻音</b>，既可读前鼻音（n）也可读后鼻音（ng）：</p>
+  <table><thead><tr><th>汉字</th><th>读音</th><th>说明</th></tr></thead><tbody><tr><td class='ch'>嗯</td><td class='py'>ń / ńg</td><td class='note'>叹词/应答声： syllabic 前鼻音 n 与后鼻音 ng 两读（ń、ńg、ǹg 等），无独立元音</td></tr>
+<tr><td class='ch'>唔</td><td class='py'>ń / ńg</td><td class='note'>叹词/应答声： syllabic 前鼻音 n 与后鼻音 ng 两读（ń、ńg、ǹg 等），无独立元音</td></tr>
+<tr><td class='ch'>哽</td><td class='py'>ń / ńg</td><td class='note'>叹词/应答声： syllabic 前鼻音 n 与后鼻音 ng 两读（ń、ńg、ǹg 等），无独立元音</td></tr>
+<tr><td class='ch'>唵</td><td class='py'>n / ng</td><td class='note'>叹词/应答声： syllabic 前鼻音 n 与后鼻音 ng 两读（ń、ńg、ǹg 等），无独立元音</td></tr></tbody></table>
+</div>
+
+<div class="card">
+  <h2><span class="tag" style="background:#e6f7f4;color:var(--teal)">n / l</span> 二、鼻音 n 与边音 l 同时存在的多音字</h2>
+  <table><thead><tr><th>汉字</th><th>n 声母读音</th><th>l 声母读音</th><th>常见度</th><th>说明</th></tr></thead><tbody><tr>
+<td class="ch">弄</td>
+<td class="py">nòng</td>
+<td class="py">lòng</td>
+<td><span class="badge b-common">常用</span></td>
+<td class="note">典型常用：nòng（玩弄/弄清/摆弄）与 lòng（弄堂/里弄）</td>
+</tr>
+<tr>
+<td class="ch">尥</td>
+<td class="py">niǎo</td>
+<td class="py">liào</td>
+<td><span class="badge b-mid">次常用</span></td>
+<td class="note">生僻/异读字，n、l 两读均极少见</td>
+</tr>
+<tr>
+<td class="ch">罱</td>
+<td class="py">nǎn</td>
+<td class="py">lǎn</td>
+<td><span class="badge b-mid">次常用</span></td>
+<td class="note">生僻/异读字，n、l 两读均极少见</td>
+</tr>
+<tr>
+<td class="ch">摎</td>
+<td class="py">náo</td>
+<td class="py">liú,liáo</td>
+<td><span class="badge b-rare">生僻</span></td>
+<td class="note">生僻/异读字，n、l 两读均极少见</td>
+</tr>
+<tr>
+<td class="ch">竜</td>
+<td class="py">néng</td>
+<td class="py">lóng</td>
+<td><span class="badge b-rare">生僻</span></td>
+<td class="note">生僻/异读字，n、l 两读均极少见</td>
+</tr>
+<tr>
+<td class="ch">輦</td>
+<td class="py">niǎn</td>
+<td class="py">liǎn</td>
+<td><span class="badge b-rare">生僻</span></td>
+<td class="note">生僻/异读字，n、l 两读均极少见</td>
+</tr>
+<tr>
+<td class="ch">溓</td>
+<td class="py">nián</td>
+<td class="py">lián,liǎn,lín</td>
+<td><span class="badge b-rare">生僻</span></td>
+<td class="note">生僻/异读字，n、l 两读均极少见</td>
+</tr></tbody></table>
+  <div class="note-box">结论：<b>弄(nòng/lòng)</b> 是日常生活中唯一典型、干净的 n/l 同字多音字（如「玩弄」nòng、「弄堂」lòng）。尥、罱、摎、竜、輦、溓 等虽字典收录 n/l 两读，但均属生僻字或方言/异读，几乎不出现在现代通用语中。</div>
+</div>
+
+<div class="card">
+  <h2>三、穷举的完备性论证</h2>
+  <div class="method"><ul>
+    <li><b>字表宇宙</b>：以《25 亿字语料频率表》全量 14975 字作为「常用字」经验集合（频率序，覆盖现代通用语几乎全部用字）。</li>
+    <li><b>跨全集校验</b>：额外对 pypinyin 全字典的 BMP 汉字区（U+4E00–U+9FFF，约 2 万汉字）完整跑一遍同样算法。</li>
+    <li><b>结果</b>：BMP 全集中前/后鼻音对立多音字共 <b>34</b> 字，仅比常用字宇宙多 <b>2</b> 个生僻/异体字形（傖梹）；n/l 全集 <b>8</b> 字，仅多 <b>1</b> 个（臡）。</li>
+    <li><b>推论</b>：在现代汉语常用字范围内，上述枚举已<b>穷尽且无遗漏</b>；超出部分均为生僻字或繁体/异体字形。</li>
+  </ul></div>
+</div>
+
+<div class="footer">
+<b>方法学</b>：对每个汉字取其全部异读（pypinyin 字典，源自《普通话异读词审音表》/《现代汉语词典》），去声调后判定两类对立——(A) 一个读音以 <code>n</code> 结尾、另一个以 <code>ng</code> 结尾，且去掉鼻音韵尾后剩余音节完全相同（即仅韵尾 n/ng 不同的最小对立）；(B) 同时存在以 <code>n</code> 开头和以 <code>l</code> 开头的读音。例词取自《现代汉语语料库词频表》（cncorpus 2000 万字语料），按词频择优。<br>
+<b>局限</b>：个别生僻/异读字的具体读法依 pypinyin 字典，可能与某方言或旧版审音有出入；繁体/异体字形按「同一读音类型」合并展示。本报告重在论证「是否存在」与「穷举数量」，单字生僻读法可据权威字典再核。
+</div>
+
+</div></body></html>

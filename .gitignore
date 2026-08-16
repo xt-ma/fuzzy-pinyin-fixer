@@ -1,0 +1,24 @@
+# ===== 依赖 =====
+node_modules/
+
+# ===== Cloudflare wrangler 本地状态 =====
+.wrangler/
+.dev.vars
+wrangler.toml.bak
+
+# ===== 外部大文件数据（不进版本库；构建词库时需要放回本地）=====
+现代汉语语料库词频表.xls
+Chinese character list from 2.5 billion words corpus ordered by frequency.xlsx
+
+# ===== 系统 / 编辑器 =====
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/
+.workbuddy/
+
+# ===== 临时文件 =====
+*.tmp
+*.bak
+~$*

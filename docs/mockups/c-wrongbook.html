@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>错题本 · 模糊音克星（方案 C 高保真稿）</title>
+<link rel="stylesheet" href="c-base.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-logo">拼</div>
+    <span class="brand-name">模糊音克星</span>
+  </div>
+  <nav>
+    <a href="c-home.html">练习</a>
+    <a href="c-stats.html">统计</a>
+    <a href="c-mastered.html">已掌握</a>
+    <a href="c-wrongbook.html" class="active">错题本</a>
+  </nav>
+  <div class="spacer"></div>
+  <div class="right">本地数据</div>
+</header>
+
+<div class="layout">
+  <aside class="sider">
+    <a class="menu-item" href="c-home.html"><span class="menu-icon">▣</span>练习</a>
+    <a class="menu-item" href="c-stats.html"><span class="menu-icon">▤</span>统计</a>
+    <a class="menu-item" href="c-mastered.html"><span class="menu-icon">✓</span>已掌握</a>
+    <a class="menu-item active" href="c-wrongbook.html"><span class="menu-icon">✕</span>错题本</a>
+  </aside>
+
+  <main class="main">
+    <div class="page">
+      <div class="crumb">首页 <b>/ 错题本</b></div>
+      <div class="row-between">
+        <div>
+          <h1 class="page-title">错题本</h1>
+          <p class="page-desc" style="margin-bottom:0">答错的字自动累积在此，去重保存；集中重练直到掌握。</p>
+        </div>
+        <a class="ant-btn primary lg" href="c-quiz.html">一键重练全部（12 题）</a>
+      </div>
+
+      <div class="mt-5 ant-card">
+        <div class="card-body">
+          <div class="row-between" style="margin-bottom:12px">
+            <span style="font-size:15px;font-weight:500">错题列表</span>
+            <span class="ant-tag red">12 条</span>
+          </div>
+          <table class="ant-table">
+            <thead><tr><th>字</th><th>词语</th><th>音对</th><th>你的选择</th><th>正确读音</th><th>出错次数</th><th>最近出错</th><th>操作</th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="word-cell">津</td><td>天津</td>
+                <td><span class="ant-tag pair-in">in/ing</span></td>
+                <td><span class="ant-tag red">jīng</span></td><td><b style="color:var(--success)">jīn</b></td>
+                <td>2 次</td><td>今天 22:40</td>
+                <td class="ops"><a href="c-quiz.html">重练</a><a class="danger" onclick="alert('已从错题本移除（演示）')">移除</a></td>
+              </tr>
+              <tr>
+                <td class="word-cell">令</td><td>命令</td>
+                <td><span class="ant-tag pair-in">in/ing</span></td>
+                <td><span class="ant-tag red">lìn</span></td><td><b style="color:var(--success)">lìng</b></td>
+                <td>3 次</td><td>今天 22:40</td>
+                <td class="ops"><a href="c-quiz.html">重练</a><a class="danger" onclick="alert('已从错题本移除（演示）')">移除</a></td>
+              </tr>
+              <tr>
+                <td class="word-cell">森</td><td>森林</td>
+                <td><span class="ant-tag pair-en">en/eng</span></td>
+                <td><span class="ant-tag red">sēng</span></td><td><b style="color:var(--success)">sēn</b></td>
+                <td>1 次</td><td>昨天 20:30</td>
+                <td class="ops"><a href="c-quiz.html">重练</a><a class="danger" onclick="alert('已从错题本移除（演示）')">移除</a></td>
+              </tr>
+              <tr>
+                <td class="word-cell">能</td><td>能力</td>
+                <td><span class="ant-tag pair-en">en/eng</span></td>
+                <td><span class="ant-tag red">néng</span></td><td><b style="color:var(--success)">néng</b></td>
+                <td>2 次</td><td>昨天 20:30</td>
+                <td class="ops"><a href="c-quiz.html">重练</a><a class="danger" onclick="alert('已从错题本移除（演示）')">移除</a></td>
+              </tr>
+              <tr>
+                <td class="word-cell">男</td><td>男女</td>
+                <td><span class="ant-tag pair-ln">l/n</span></td>
+                <td><span class="ant-tag red">lán</span></td><td><b style="color:var(--success)">nán</b></td>
+                <td>1 次</td><td>昨天 19:12</td>
+                <td class="ops"><a href="c-quiz.html">重练</a><a class="danger" onclick="alert('已从错题本移除（演示）')">移除</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="mt-5 ant-alert info">
+        <span>ℹ</span>
+        <span>交互说明：错题去重累积（同一字多次出错只保留一条、累计次数）；「重练」进入答题页且只抽取错题；「移除」需二次确认。答对一次不自动移出，连续答对 2 次或手动移除才清出。</span>
+      </div>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>
