@@ -6,10 +6,9 @@
    - 更新：版本号 + skipWaiting/clientsClaim，发布新版本自动生效
    仅 https 环境生效（file:// 下浏览器不注册本文件）
    ============================================================ */
-const CACHE_NAME = "fpf-shell-v4"; // 每次发版递增：activate 时删除旧缓存，配合 skipWaiting 立即生效
+const CACHE_NAME = "fpf-shell-v6"; // 每次发版递增：activate 时删除旧缓存，配合 skipWaiting 立即生效
 const SHELL_ASSETS = [
   "./",
-  "./index.html",
   "./css/style.css",
   "./js/store.js",
   "./js/fsrs.js",
@@ -48,24 +47,32 @@ self.addEventListener("fetch", (event) => {
   if (url.origin !== self.location.origin) return; // 跨域（含云同步 API 所在域名）不缓存
   if (url.pathname.indexOf("/api/") >= 0) return;  // 同步 API 始终走网络
 
+  // Cloudflare Pages 将 /index.html 永久重定向到 /：跟随重定向后的缓存响应
+  // 若由 respondWith 返回给导航请求会导致 ERR_FAILED（已安装 PWA 启动失败的根因），
+  // 故将此类导航统一归一化为根路径查缓存/回源（不缓存 ./index.html 条目）
+  const cacheKey =
+    req.mode === "navigate" && url.pathname.endsWith("/index.html")
+      ? new Request(url.origin + "/")
+      : req;
+
   event.respondWith(
-    caches.match(req).then((hit) => {
+    caches.match(cacheKey).then((hit) => {
       if (hit) {
         // 命中缓存：立即返回，同时后台回源刷新缓存
-        fetch(req)
+        fetch(cacheKey)
           .then((res) => {
-            if (res && res.ok) caches.open(CACHE_NAME).then((c) => c.put(req, res));
+            if (res && res.ok) caches.open(CACHE_NAME).then((c) => c.put(cacheKey, res));
           })
           .catch(() => {});
         return hit;
       }
-      return fetch(req).then((res) => {
+      return fetch(cacheKey).then((res) => {
         if (res && res.ok) {
           const copy = res.clone();
-          caches.open(CACHE_NAME).then((c) => c.put(req, copy));
+          caches.open(CACHE_NAME).then((c) => c.put(cacheKey, copy));
         }
         return res;
-      }).catch(() => caches.match("./index.html")); // 离线兜底：返回应用壳
+      }).catch(() => caches.match("./")); // 离线兜底：返回应用壳
     })
   );
 });

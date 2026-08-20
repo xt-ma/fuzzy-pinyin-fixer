@@ -38,9 +38,10 @@ const src = fs.readFileSync(path.join(ROOT, "data", "words.js"), "utf8");
 const json = src.replace(/^\/\/[^\n]*\n/, "").replace(/^window\.WORDS_DATA\s*=\s*/, "").replace(/;?\s*$/, "");
 const els = {};
 function makeEl(tag, id) { const e = new El(tag, id); if (id) els[id] = e; return e; }
-["toast","homePairCards","homeStats","homeActions","homeRecent","quizModeLabel","quizProgressText","quizProgressBar","quizPairTag","quizCard","quizKeyHint","btnQuitQuiz","btnPrev","btnResume","btnMasteredTop","resultBody","masteredSearch","wrongbookAction","wrongbookBody","settingsStats","fsrsStatus","syncHint","syncStatus","localKeyBox","statsCards","statsRange","statsCharts"].forEach((id) => makeEl("div", id));
+["toast","homePairCards","homeStats","homeActions","homeRecent","quizModeLabel","quizProgressText","quizProgressBar","quizPairTag","quizCard","quizKeyHint","btnQuitQuiz","btnPrev","btnResume","btnMasteredTop","btnTtsToggle","resultBody","masteredSearch","wrongbookAction","wrongbookBody","settingsStats","fsrsStatus","ttsDesc","syncHint","syncStatus","localKeyBox","statsCards","statsRange","statsCharts"].forEach((id) => makeEl("div", id));
 els.syncServer = makeEl("input", "syncServer"); els.remoteKeyInput = makeEl("input", "remoteKeyInput");
 els.syncAutoToggle = makeEl("input", "syncAutoToggle"); els.fsrsToggle = makeEl("input", "fsrsToggle");
+els.ttsToggle = makeEl("input", "ttsToggle");
 els.importFileInput = makeEl("input", "importFileInput");
 els.btnBindSync = makeEl("button", "btnBindSync"); els.btnManualSync = makeEl("button", "btnManualSync");
 els.btnGenKey = makeEl("button", "btnGenKey"); els.btnCopyKey = makeEl("button", "btnCopyKey"); els.btnResetKey = makeEl("button", "btnResetKey"); els.btnClearData = makeEl("button", "btnClearData");
@@ -121,8 +122,11 @@ ok(fs.existsSync(path.join(ROOT, "sw.js")), "sw.js 存在");
 ok(fs.existsSync(path.join(ROOT, "icons", "icon-192.png")), "icons/icon-192.png 存在");
 ok(fs.existsSync(path.join(ROOT, "icons", "icon-512.png")), "icons/icon-512.png 存在");
 const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, "manifest.json"), "utf8"));
-ok(manifest.icons && manifest.icons.length === 2, "manifest 含 2 个图标");
-ok(manifest.start_url === "./index.html" && manifest.display === "standalone", "manifest 启动/显示模式正确");
+// 故意只含 192 图标：使站点不满足 Chrome 可安装条件（需 192+512），
+// 避免 Android Chrome 触发 WebAPK 云端打包（国内网络连不上 Google 导致安装失败），
+// 退回本地快捷方式路径，仍按 manifest 以 standalone 窗口打开
+ok(manifest.icons && manifest.icons.length === 1, "manifest 仅含 1 个图标（故意禁用 Chrome 安装，见注释）");
+ok(manifest.start_url === "./" && manifest.display === "standalone", "manifest 启动/显示模式正确（start_url 用根路径：Pages 会 308 重定向 /index.html，重定向响应进缓存会致 ERR_FAILED）");
 const html = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
 ok(html.indexOf("viewport-fit=cover") >= 0, "index.html 含 viewport-fit=cover");
 ok(html.indexOf('rel="manifest"') >= 0, "index.html 引入 manifest");
