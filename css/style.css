@@ -340,6 +340,19 @@ body {
 .quiz-actions { margin-top: var(--sp-4); display: flex; justify-content: center; gap: var(--sp-3); flex-wrap: wrap; }
 .quiz-mastered-tip { margin-top: var(--sp-3); font-size: 13px; color: var(--text-3); }
 .quiz-keyhint { max-width: 720px; margin: 12px auto 0; font-size: 12px; color: var(--text-3); text-align: center; }
+/* F2：答题页朗读开关两态（与 #btnMasteredTop 同规范） */
+#btnTtsToggle { padding: 0 10px; border-color: var(--border); color: var(--text-2); }
+#btnTtsToggle:hover { border-color: var(--primary); color: var(--primary); }
+#btnTtsToggle.tts-off { opacity: 0.45; }
+/* F5：作答后词语旁的手动朗读图标（内联在 .quiz-word 内，随词语居中） */
+.quiz-replay {
+  display: inline-block; vertical-align: middle; margin-left: 6px;
+  font-size: 19px; line-height: 1; letter-spacing: 0;
+  padding: 6px 8px; border: none; border-radius: var(--r-md);
+  background: transparent; cursor: pointer; transition: all 0.2s;
+}
+.quiz-replay:hover { background: var(--primary-1); }
+.quiz-replay:active { transform: scale(0.92); }
 
 /* ================= 复盘页 ================= */
 .result-hero { text-align: center; padding: var(--sp-7) var(--sp-6); }

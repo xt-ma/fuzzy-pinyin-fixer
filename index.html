@@ -64,6 +64,7 @@
           <div class="progress"><div class="bar" id="quizProgressBar" style="width:0%"></div></div>
         </div>
         <span class="ant-tag" id="quizPairTag"></span>
+        <button class="ant-btn" id="btnTtsToggle" onclick="App.toggleTts()" title="切换作答朗读">🔊</button>
         <button class="ant-btn" id="btnMasteredTop" onclick="App.toggleMastered()">已掌握</button>
       </div>
       <div class="quiz-card" id="quizCard"></div>
@@ -185,6 +186,22 @@
 
         <div class="ant-card mt-5">
           <div class="card-body">
+            <div class="settings-section-title">语音朗读</div>
+            <div class="row-between">
+              <div>
+                <div class="settings-item-title">作答后自动朗读</div>
+                <div class="settings-item-desc" id="ttsDesc">作答后自动朗读字词的普通话读音，帮助建立听觉印象；作答完成后可点词语旁的 🔉 图标反复重听。使用设备自带语音引擎，无需联网。</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="ttsToggle">
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="ant-card mt-5">
+          <div class="card-body">
             <div class="settings-section-title">记忆调度（FSRS）</div>
             <div class="row-between">
               <div>
@@ -248,6 +265,7 @@
 <script src="data/words.js"></script>
 <script src="js/fsrs.js"></script>
 <script src="js/store.js"></script>
+<script src="js/tts.js"></script>
 <script src="js/sync.js"></script>
 <script src="js/quiz.js"></script>
 <script src="js/app.js"></script>

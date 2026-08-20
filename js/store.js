@@ -117,7 +117,7 @@
     },
     /* ---------- settings ---------- */
     getSettings() {
-      return Object.assign({ defaultCount: 10, enableFSRS: true }, this.get("settings", {}));
+      return Object.assign({ defaultCount: 10, enableFSRS: true, ttsEnabled: true }, this.get("settings", {}));
     },
     setSettings(patch) {
       // 只写 patch 本身，不展开默认值——避免把默认 defaultCount/enableFSRS 误持久化，

@@ -149,9 +149,11 @@
     $$("#topNav a, #sider .menu-item").forEach((a) => {
       a.classList.toggle("active", a.getAttribute("data-view") === view);
     });
-    // 答题中离开则终止轮次
+    // 答题中离开则终止轮次、停止残留朗读与待切题计时
     if (view !== "quiz") {
       window.removeEventListener("keydown", quizKeyHandler);
+      clearTimeout(autoNextTimer);
+      if (window.TTS) TTS.stop();
     }
     window.scrollTo(0, 0);
     if (view === "home") renderHome();
@@ -374,6 +376,58 @@
 
   /* ---------------- 答题页 ---------------- */
   let autoNextTimer = null;
+  let quizSeq = 0; // F6：答题页序号，切题时自增，使未完成的朗读回调失效
+
+  /* ---- TTS 接入（docs/tts-prd.md F2/F5/F6） ---- */
+  function ttsTextOf(q) {
+    return q.word ? q.word.word : q.char;
+  }
+  /* F6：作答后自动朗读 1 遍；scheduleNext 时等播完再启动 1 秒切题倒计时。
+     TTS 关闭/不支持时行为与旧逻辑完全一致（立即计时/不计时） */
+  function speakThen(q, scheduleNext) {
+    const seq = quizSeq;
+    if (scheduleNext) clearTimeout(autoNextTimer);
+    if (!window.TTS || !TTS.enabled()) {
+      if (scheduleNext) autoNextTimer = setTimeout(nextQuestion, 1000);
+      return;
+    }
+    TTS.speak(ttsTextOf(q)).then(() => {
+      // 期间已切题/离开答题页则放弃调度，避免意外跳题
+      if (seq !== quizSeq || !$("#view-quiz").classList.contains("active")) return;
+      if (scheduleNext) autoNextTimer = setTimeout(nextQuestion, 1000);
+    });
+  }
+  /* F5：作答后在词语旁追加手动朗读图标（可反复点击，不受开关约束） */
+  function showReplayIcon(q) {
+    const wordEl = $("#quizCard .quiz-word");
+    if (!wordEl || wordEl.querySelector(".quiz-replay")) return;
+    if (!window.TTS || !TTS.supported()) return;
+    const btn = document.createElement("button");
+    btn.className = "quiz-replay";
+    btn.title = "重听朗读";
+    btn.textContent = "🔉";
+    const text = ttsTextOf(q);
+    btn.addEventListener("click", () => TTS.speak(text, { ignoreSwitch: true }));
+    wordEl.appendChild(btn);
+  }
+  /* F2：答题页右上角朗读开关两态 */
+  function updateTtsToggle() {
+    const btn = $("#btnTtsToggle");
+    if (!btn) return;
+    const usable = window.TTS && TTS.supported();
+    btn.style.display = usable ? "" : "none";
+    if (!usable) return;
+    const on = TTS.enabled();
+    btn.textContent = on ? "🔊" : "🔇";
+    btn.classList.toggle("tts-off", !on);
+  }
+  function toggleTts() {
+    if (!window.TTS || !TTS.supported()) return;
+    const on = !TTS.enabled();
+    TTS.setEnabled(on);
+    updateTtsToggle();
+    toast(on ? "朗读已开启" : "朗读已关闭");
+  }
 
   function startQuiz(mode, pair, opts) {
     clearTimeout(autoNextTimer);
@@ -398,6 +452,8 @@
   }
 
   function renderQuiz() {
+    quizSeq++; // F6：切题序号自增，使上一题未完成的朗读回调失效
+    updateTtsToggle();
     const q = Quiz.currentQuestion();
     const round = Quiz.getRound();
     if (!q) {
@@ -743,6 +799,7 @@
         : '<div class="ant-alert error"><span>✘</span><span><b>回答错误</b>，正确读音为 <b>' +
           escapeHtml(corr.py) + "</b>（" + escapeHtml(Quiz.tagLabel(q.pair, corr.tag)) + "）。</span></div>";
     }
+    showReplayIcon(q); // F5：回溯查看已答题也可手动重听
     actions.style.display = "none";
   }
 
@@ -808,6 +865,8 @@
 
     const corr = q.correct;
 
+    // F5：作答后词语旁出现手动朗读图标
+    showReplayIcon(q);
     if (res.correct) {
       const pairName = q.pair;
       feedback.innerHTML =
@@ -820,10 +879,10 @@
         clearTimeout(autoNextTimer);
         nextQuestion();
       });
-      // 1 秒后自动下一题
-      clearTimeout(autoNextTimer);
-      autoNextTimer = setTimeout(nextQuestion, 1000);
+      // F6：自动朗读 1 遍，播完再启动 1 秒自动切题倒计时
+      speakThen(q, true);
     } else {
+      speakThen(q, false); // 答错也自动朗读 1 遍（F1）
       feedback.innerHTML =
         '<div class="ant-alert error"><span>✘</span><span><b>回答错误</b>，正确读音为 <b>' +
         escapeHtml(corr.py) + "</b>（" + escapeHtml(Quiz.tagLabel(q.pair, corr.tag)) +
@@ -838,6 +897,7 @@
   /* 多行题：全部行作答完毕后的整题反馈 */
   function finishMultiRow(q) {
     const res = Quiz.commitQuestion();
+    showReplayIcon(q); // F5：整题完成后出现手动朗读图标
     const feedback = $("#quizCard .quiz-feedback");
     const actions = $("#quizCard .quiz-actions");
     const tip = $("#quizCard .quiz-mastered-tip");
@@ -852,10 +912,10 @@
         clearTimeout(autoNextTimer);
         nextQuestion();
       });
-      // 1 秒后自动下一题
-      clearTimeout(autoNextTimer);
-      autoNextTimer = setTimeout(nextQuestion, 1000);
+      // F6：自动朗读 1 遍，播完再启动 1 秒自动切题倒计时
+      speakThen(q, true);
     } else {
+      speakThen(q, false); // 答错也自动朗读 1 遍（F1）
       const wrongRows = q.rows.filter((_, i) => !q.rowResults[i]);
       feedback.innerHTML =
         '<div class="ant-alert error"><span>✘</span><span><b>有 ' + wrongRows.length +
@@ -1150,6 +1210,14 @@
     const fsrsOn = !!Store.getSettings().enableFSRS;
     const toggle = $("#fsrsToggle");
     if (toggle) toggle.checked = fsrsOn;
+    // TTS 朗读开关状态（不支持时禁用并提示）
+    const ttsBox = $("#ttsToggle");
+    if (ttsBox) {
+      const usable = window.TTS && TTS.supported();
+      ttsBox.checked = usable && TTS.enabled();
+      ttsBox.disabled = !usable;
+      if (!usable) $("#ttsDesc").textContent = "当前浏览器不支持语音朗读。";
+    }
     const dueCount = Store.getDueKeys(Date.now(), 1000000).length;
     const cardCount = Object.keys(Store.getCards()).length;
     $("#fsrsStatus").innerHTML =
@@ -1290,6 +1358,7 @@
     prevQuestion,
     resumeLatest,
     toggleMastered,
+    toggleTts,
     quitQuiz: () => {
       clearTimeout(autoNextTimer);
       const round = Quiz.getRound();
@@ -1381,6 +1450,12 @@
       Store.setSettings({ enableFSRS: ev.target.checked });
       renderSettings();
       toast(ev.target.checked ? "已启用记忆调度（到期字优先复习）" : "已切换回纯随机出题");
+    });
+    // TTS 朗读开关（设置页，与答题页右上角按钮同步）
+    $("#ttsToggle").addEventListener("change", (ev) => {
+      if (window.TTS) TTS.setEnabled(ev.target.checked);
+      updateTtsToggle(); // 同步答题页按钮两态
+      toast(ev.target.checked ? "朗读已开启" : "朗读已关闭");
     });
     // 自动同步开关（与密钥绑定解耦：只控制绑定后是否自动推送/拉取）
     $("#syncAutoToggle").addEventListener("change", (ev) => {
