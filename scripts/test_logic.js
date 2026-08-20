@@ -159,5 +159,36 @@ ok(!q4.some((q) => q.char === "男"), "已掌握字不在 l/n 出题池");
 const e1 = Quiz.makeQuestion(Quiz.allEntries("in/ing").find((e) => e.char === "京"));
 ok(Quiz.renderPy(e1.correct.py, "in/ing", "ng").includes('<span class="diff">'), "in/ing 差异高亮渲染");
 
+// 2.7 多字题：所有考察字都答错时，逐字计入错题本（如「呻吟」两字都错 → 都进错题本）
+{
+  let target = null;
+  for (let i = 0; i < 50 && !target; i++) {
+    Quiz.startRound("mix", null, 20);
+    while (!Quiz.isFinished()) {
+      const q = Quiz.currentQuestion();
+      if (q.rows && q.rows.length >= 2) { target = q; break; }
+      // 非目标题：答对跳过（答对不产生错题干扰）
+      if (q.rows) {
+        q.rows.forEach((row, ri) => Quiz.answerRow(ri, row.options.find((o) => o.isCorrect)));
+        Quiz.commitQuestion();
+      } else {
+        Quiz.answer(q.options.find((o) => o.isCorrect));
+      }
+      Quiz.next();
+    }
+  }
+  if (target) {
+    target.rows.forEach((row, ri) => Quiz.answerRow(ri, row.options.find((o) => !o.isCorrect)));
+    Quiz.commitQuestion();
+    const wb = Store.getWrongBook();
+    ok(
+      target.rows.every((row) => wb[row.char]),
+      "多字题全错 → 每个考察字都入错题本（" + target.rows.map((r) => r.char).join("、") + "）"
+    );
+  } else {
+    ok(false, "50 轮内应出现多字题");
+  }
+}
+
 console.log(`\n== 结果：${pass} 通过 / ${fail} 失败 ==`);
 process.exit(fail ? 1 : 0);

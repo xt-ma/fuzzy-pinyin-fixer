@@ -335,7 +335,6 @@ body {
 .quiz-options.opts-4 { display: grid; grid-template-columns: repeat(2, 200px); gap: 12px; justify-content: center; }
 .quiz-row-opts.opts-4 { display: grid; grid-template-columns: repeat(2, 124px); gap: 8px; justify-content: center; }
 .quiz-row-opts.opts-4 .quiz-option { width: 124px; height: 48px; font-size: 17px; }
-.quiz-row-hint { margin-top: 6px; display: flex; justify-content: center; }
 .quiz-feedback { margin-top: var(--sp-5); min-height: 40px; }
 .quiz-actions { margin-top: var(--sp-4); display: flex; justify-content: center; gap: var(--sp-3); flex-wrap: wrap; }
 .quiz-mastered-tip { margin-top: var(--sp-3); font-size: 13px; color: var(--text-3); }
@@ -467,18 +466,22 @@ body {
   .page-title { font-size: 18px; }
   .row-between { flex-direction: column; align-items: stretch; gap: var(--sp-2); }
 
-  /* 答题：2 选项并排（省高度，一页屏关键） */
+  /* 答题：选项等分弹性宽度，任何屏宽都不溢出 */
   .quiz-options { flex-direction: row; align-items: center; justify-content: center; gap: 10px; }
-  .quiz-option { width: 150px; height: 52px; font-size: 18px; }
+  .quiz-option { flex: 1 1 0; width: auto; min-width: 0; max-width: 200px; height: 52px; font-size: 18px; }
   /* 4 选项 2×2 全宽 */
   .quiz-options.opts-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-  .quiz-options.opts-4 .quiz-option { width: 100%; }
-  /* 多字题：行内 2 选项并排（省高度），4 选项 2×2 */
-  .quiz-row { flex-direction: row; gap: 8px; width: 100%; }
-  .quiz-row-opts { flex-direction: row; gap: 8px; }
-  .quiz-row .quiz-option { width: 148px; height: 46px; font-size: 17px; }
+  .quiz-options.opts-4 .quiz-option { width: 100%; max-width: none; }
+  /* 多字题：行内 2 选项并排且等分剩余宽度，4 选项 2×2 */
+  .quiz-row { flex-direction: row; gap: 8px; width: 100%; min-width: 0; }
+  .quiz-row-char { width: 30px; font-size: 22px; }
+  .quiz-row-opts { flex: 1; min-width: 0; flex-direction: row; gap: 8px; }
+  .quiz-row .quiz-option { flex: 1 1 0; width: auto; min-width: 0; max-width: none; height: 46px; font-size: 15px; }
+  /* 窄按钮防溢出：拼音随屏宽缩字，韵母注释允许换行 */
+  .quiz-row .quiz-option .py { font-size: clamp(12px, 4vw, 15px); }
+  .quiz-row .quiz-option .rhyme { white-space: normal; line-height: 1.25; font-size: 11px; }
   .quiz-row-opts.opts-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; }
-  .quiz-row-opts.opts-4 .quiz-option { width: 100%; height: 44px; font-size: 16px; }
+  .quiz-row-opts.opts-4 .quiz-option { width: 100%; height: 44px; font-size: 14px; }
   .quiz-word { font-size: 34px; letter-spacing: 4px; line-height: 1.3; }
   /* 答题区压缩留白（一页屏） */
   .quiz-toolbar { gap: var(--sp-2); margin-bottom: var(--sp-2); }

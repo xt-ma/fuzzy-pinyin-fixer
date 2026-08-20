@@ -442,24 +442,14 @@
     return { correct: isCorrect, q, wrongList: round.wrongList };
   }
 
-  /* 多行题：作答其中一行（每个字独立记录流水，对错都记） */
+  /* 多行题：作答其中一行；整题完成前允许修改选择，
+     作答流水统一在 commitQuestion 按最终选择记录（修改不重复计入统计） */
   function answerRow(rowIndex, selectedOption) {
     const q = currentQuestion();
     if (!q || !q.rows) return null;
     const row = q.rows[rowIndex];
     if (!row) return null;
     const isCorrect = selectedOption.isCorrect;
-    Store.recordAnswer({
-      char: row.char,
-      pair: row.pair,
-      rating: isCorrect ? 3 : 1, // FSRS rating：1=again(错) 3=good(对)
-      word: q.word ? q.word.word : null,
-      correctPy: row.correct.py,
-      wrongPy: isCorrect ? null : selectedOption.py,
-      mode: round.mode,
-      source: round.source,
-      fromFSRS: !!q.fromFSRS,
-    });
     q.rowResults = q.rowResults || [];
     q.rowResults[rowIndex] = isCorrect;
     q.rowPicks = q.rowPicks || [];
@@ -472,6 +462,22 @@
     const q = currentQuestion();
     if (!q || !q.rows) return null;
     const results = q.rowResults || [];
+    // 每个字按最终选择记录作答流水（整题完成前可修改，故延迟到提交时记录）
+    q.rows.forEach((row, i) => {
+      const pick = (q.rowPicks || [])[i];
+      if (!pick) return;
+      Store.recordAnswer({
+        char: row.char,
+        pair: row.pair,
+        rating: results[i] ? 3 : 1, // FSRS rating：1=again(错) 3=good(对)
+        word: q.word ? q.word.word : null,
+        correctPy: row.correct.py,
+        wrongPy: results[i] ? null : pick.py,
+        mode: round.mode,
+        source: round.source,
+        fromFSRS: !!q.fromFSRS,
+      });
+    });
     const allCorrect = results.length === q.rows.length && results.every(Boolean);
     if (allCorrect) {
       round.correctCount += 1;

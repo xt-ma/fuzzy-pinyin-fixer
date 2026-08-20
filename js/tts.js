@@ -8,12 +8,22 @@
 
   var synth = window.speechSynthesis || null;
   var zhVoice = null;      // 缓存选中的中文 voice（列表异步加载）
+  var inertMiss = 0;       // 连续未触发 onstart 的次数（探测无响应引擎，如 Firefox）
+  var degraded = false;    // 引擎判定不可用后停用全部功能
   var RATE = 0.9;          // 略慢于默认，利于辨音学习（PRD F1）
   var MS_PER_CHAR = 350;   // 估算时长：每字 350ms（F6 超时兜底）
   var FALLBACK_BUFFER = 500; // 估算时长缓冲
 
   function supported() {
-    return !!(synth && typeof window.SpeechSynthesisUtterance === "function");
+    return !degraded && !!(synth && typeof window.SpeechSynthesisUtterance === "function");
+  }
+
+  /* 引擎无响应（Firefox/GeckoView 未实现 TTS）：停用功能并通知 UI 层提示 */
+  function degrade() {
+    if (degraded) return;
+    degraded = true;
+    if (synth) synth.cancel();
+    if (window.TTS && typeof window.TTS.onDegraded === "function") window.TTS.onDegraded();
   }
 
   /* voice 选择：lang 以 zh 开头，名称优先级 普通话 > Tingting/Yaoyao > zh-CN > zh */
@@ -73,13 +83,23 @@
       if (zhVoice) u.voice = zhVoice;
       u.rate = RATE;
       var done = false;
+      var started = false;
       var timer = setTimeout(finish, text.length * MS_PER_CHAR + FALLBACK_BUFFER);
+      var startCheck = setTimeout(function () {
+        // 引擎无响应：连续 2 次未启动则判定不可用（避免单次偏慢误判）
+        if (!started && !done) {
+          inertMiss += 1;
+          if (inertMiss >= 2) degrade();
+        }
+      }, 800);
       function finish() {
         if (done) return;
         done = true;
         clearTimeout(timer);
+        clearTimeout(startCheck);
         resolve();
       }
+      u.onstart = function () { started = true; inertMiss = 0; };
       u.onend = finish;
       u.onerror = finish;
       synth.speak(u);

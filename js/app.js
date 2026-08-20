@@ -765,20 +765,6 @@
         if (row.options[i].isCorrect) b.classList.add("ok");
         else if (picks[ri] && picks[ri] === row.options[i]) b.classList.add("bad");
       });
-      // 答错的行补行内正确读音提示
-      q.rows.forEach((row, ri) => {
-        if (results[ri]) return;
-        const rowEl = btns.find((b) => b.getAttribute("data-r") === String(ri));
-        const wrap = rowEl ? rowEl.parentElement.parentElement : null;
-        if (wrap && !wrap.querySelector(".quiz-row-hint")) {
-          const hint = document.createElement("div");
-          hint.className = "quiz-row-hint";
-          hint.innerHTML =
-            '<span class="ant-tag red">正确读音 ' + escapeHtml(row.correct.py) + "（" +
-            escapeHtml(Quiz.tagLabel(row.pair, row.correct.tag)) + "）</span>";
-          wrap.appendChild(hint);
-        }
-      });
       const wrongRows = q.rows.filter((_, i) => !results[i]);
       feedback.innerHTML = wrongRows.length === 0
         ? '<div class="ant-alert success"><span>✔</span><span><b>回答正确！</b>全部 ' + q.rows.length + " 个字读音都对了。</span></div>"
@@ -822,29 +808,19 @@
     const tip = $("#quizCard .quiz-mastered-tip");
 
     if (rows) {
-      // ---- 多行题：逐行作答 ----
+      // ---- 多行题：逐行作答，整题完成前允许修改已答行 ----
       const selected = rows[rowIndex].options[optIndex];
       const res = Quiz.answerRow(rowIndex, selected);
-      // 锁定该行选项并标出对错
+      // 该行选项标出对错但保持可点（整题完成前可改）
       btns.forEach((b) => {
         if (b.getAttribute("data-r") !== String(rowIndex)) return;
-        b.disabled = true;
         const i = +b.getAttribute("data-i");
         const opt = rows[rowIndex].options[i];
+        b.classList.remove("ok", "bad");
         if (opt.isCorrect) b.classList.add("ok");
         else if (i === optIndex) b.classList.add("bad");
       });
-      // 该行答错：行内显示正确读音提示
-      if (!res.correct) {
-        const rowEl = btns.find((b) => b.getAttribute("data-r") === String(rowIndex)).parentElement.parentElement;
-        const hint = document.createElement("div");
-        hint.className = "quiz-row-hint";
-        hint.innerHTML =
-          '<span class="ant-tag red">正确读音 ' + escapeHtml(res.row.correct.py) + "（" +
-          escapeHtml(Quiz.tagLabel(res.row.pair, res.row.correct.tag)) + "）</span>";
-        rowEl.appendChild(hint);
-      }
-      // 全部行答完 → 整题反馈
+      // 全部行答完 → 锁定选项 + 整题反馈
       if ((q.rowResults || []).filter((v) => v !== undefined).length >= rows.length) {
         finishMultiRow(q);
       }
@@ -898,6 +874,7 @@
   function finishMultiRow(q) {
     const res = Quiz.commitQuestion();
     showReplayIcon(q); // F5：整题完成后出现手动朗读图标
+    $$("#quizCard .quiz-option").forEach((b) => (b.disabled = true)); // 整题完成：锁定全部选项
     const feedback = $("#quizCard .quiz-feedback");
     const actions = $("#quizCard .quiz-actions");
     const tip = $("#quizCard .quiz-mastered-tip");
@@ -1457,6 +1434,13 @@
       updateTtsToggle(); // 同步答题页按钮两态
       toast(ev.target.checked ? "朗读已开启" : "朗读已关闭");
     });
+    // TTS 引擎无响应（Firefox 等未实现语音合成）：提示并停用功能
+    if (window.TTS) {
+      TTS.onDegraded = () => {
+        updateTtsToggle();
+        toast("当前浏览器语音引擎不可用，朗读已停用；建议改用 Chrome 或系统自带浏览器");
+      };
+    }
     // 自动同步开关（与密钥绑定解耦：只控制绑定后是否自动推送/拉取）
     $("#syncAutoToggle").addEventListener("change", (ev) => {
       const on = ev.target.checked;

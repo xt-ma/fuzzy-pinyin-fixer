@@ -21,11 +21,11 @@ const synthMock = {
   voices: [],
   addEventListener() {},
   getVoices() { return this.voices; },
-  speak(u) { spoken.push(u); },
+  speak(u) { spoken.push(u); if (u.onstart) u.onstart(); }, // 正常引擎：立即启动
   cancel() { cancelCount++; },
 };
 
-function makeSandbox(withSynth) {
+function makeSandbox(synthObj) {
   const memStore = {};
   const sandbox = {
     window: {},
@@ -39,7 +39,7 @@ function makeSandbox(withSynth) {
     console, Date, Math, setTimeout, clearTimeout, JSON,
     Object, Array, String, Number, Promise,
   };
-  if (withSynth) sandbox.speechSynthesis = synthMock;
+  if (synthObj) sandbox.speechSynthesis = synthObj;
   sandbox.window = sandbox;
   vm.createContext(sandbox);
   const load = (rel) =>
@@ -49,7 +49,7 @@ function makeSandbox(withSynth) {
   return sandbox;
 }
 
-const sandbox = makeSandbox(true);
+const sandbox = makeSandbox(synthMock);
 const TTS = sandbox.TTS;
 const Store = sandbox.Store;
 
@@ -108,12 +108,31 @@ ok(TTS._pickZhVoice([vZhTW]) === vZhTW, "兜底任意 zh");
   ok(elapsed >= 700 && elapsed < 3000, "onend 缺失时按估算时长自动 resolve（" + elapsed + "ms），流程不卡死");
 
   console.log("== 6. 不支持环境静默降级 ==");
-  const box2 = makeSandbox(false);
+  const box2 = makeSandbox(null);
   ok(box2.TTS.supported() === false, "无 speechSynthesis 时 supported() 为 false");
   await box2.TTS.speak("测试"); // 不应抛错
   ok(true, "不支持环境 speak 静默 resolve 不抛错");
   box2.TTS.stop(); // 不应抛错
   ok(true, "不支持环境 stop 不抛错");
+
+  console.log("== 7. 无响应引擎自动降级（Firefox/GeckoView 等） ==");
+  const inertSynth = {
+    voices: [],
+    addEventListener() {},
+    getVoices() { return []; },
+    speak() {}, // 空实现：从无任何事件回调
+    cancel() {},
+  };
+  const box3 = makeSandbox(inertSynth);
+  let degradedCalled = false;
+  box3.TTS.onDegraded = () => { degradedCalled = true; };
+  await box3.TTS.speak("一"); // 800ms 未启动 → inertMiss=1；850ms 兜底 resolve
+  ok(box3.TTS.supported() === true, "单次未启动不误判（避免慢启动误伤）");
+  await box3.TTS.speak("二"); // inertMiss=2 → 降级
+  ok(box3.TTS.supported() === false, "连续两次未启动 → 判定引擎不可用");
+  ok(degradedCalled === true, "onDegraded 回调已触发（UI 提示入口）");
+  await box3.TTS.speak("三");
+  ok(true, "降级后 speak 静默 resolve 不抛错");
 
   console.log("\n结果: " + pass + " 通过, " + fail + " 失败");
   process.exit(fail ? 1 : 0);
