@@ -810,15 +810,13 @@
     if (rows) {
       // ---- 多行题：逐行作答，整题完成前允许修改已答行 ----
       const selected = rows[rowIndex].options[optIndex];
-      const res = Quiz.answerRow(rowIndex, selected);
-      // 该行选项标出对错但保持可点（整题完成前可改）
+      Quiz.answerRow(rowIndex, selected);
+      // 答题中间态：只用蓝色标记当前选择，不揭示对错（整题提交后才标红绿）
       btns.forEach((b) => {
         if (b.getAttribute("data-r") !== String(rowIndex)) return;
         const i = +b.getAttribute("data-i");
-        const opt = rows[rowIndex].options[i];
-        b.classList.remove("ok", "bad");
-        if (opt.isCorrect) b.classList.add("ok");
-        else if (i === optIndex) b.classList.add("bad");
+        b.classList.remove("ok", "bad", "picked");
+        if (i === optIndex) b.classList.add("picked");
       });
       // 全部行答完 → 锁定选项 + 整题反馈
       if ((q.rowResults || []).filter((v) => v !== undefined).length >= rows.length) {
@@ -874,7 +872,18 @@
   function finishMultiRow(q) {
     const res = Quiz.commitQuestion();
     showReplayIcon(q); // F5：整题完成后出现手动朗读图标
-    $$("#quizCard .quiz-option").forEach((b) => (b.disabled = true)); // 整题完成：锁定全部选项
+    // 整题提交：锁定选项，清中间态蓝标，按最终结果揭示红绿
+    const picks = q.rowPicks || [];
+    $$("#quizCard .quiz-option").forEach((b) => {
+      b.disabled = true;
+      const ri = +b.getAttribute("data-r");
+      const i = +b.getAttribute("data-i");
+      const row = q.rows[ri];
+      if (!row) return;
+      b.classList.remove("picked");
+      if (row.options[i].isCorrect) b.classList.add("ok");
+      else if (picks[ri] === row.options[i]) b.classList.add("bad");
+    });
     const feedback = $("#quizCard .quiz-feedback");
     const actions = $("#quizCard .quiz-actions");
     const tip = $("#quizCard .quiz-mastered-tip");

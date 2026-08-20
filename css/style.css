@@ -319,6 +319,9 @@ body {
 .quiz-option.ok .rhyme { color: #389E0D; }
 .quiz-option.bad { border-color: var(--error); background: var(--error-1); color: #CF1322; }
 .quiz-option.bad .rhyme { color: #CF1322; }
+/* 多字题中间态：选中项蓝色标记，不揭示对错（整题提交后才标红绿） */
+.quiz-option.picked { border-color: var(--primary); background: var(--primary-1); color: var(--primary); }
+.quiz-option.picked .rhyme { color: var(--primary); }
 .quiz-option .diff { font-weight: 700; }
 .quiz-option .py { display: inline-block; white-space: nowrap; }
 /* 多字题（词内多个可考字，逐行作答） */
