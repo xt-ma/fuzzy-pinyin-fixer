@@ -161,6 +161,7 @@
     else if (view === "settings") renderSettings();
     else if (view === "quiz") renderQuiz();
     else if (view === "result" && window._lastSummary) renderResult(window._lastSummary);
+    labelTables();
   }
 
   /* ---------------- 首页 ---------------- */
@@ -243,6 +244,7 @@
           "</tbody></table></div>"
         : emptyHint("还没有练习记录，点击上方「开始综合练习」开始吧"))
       "</div>";
+    labelTables();
   }
 
   /* 题量选项：5 / 10 / 20 / 自定义 / 无限 */
@@ -342,8 +344,8 @@
     else if (rate >= 60) resultTag = '<span class="ant-tag green">继续加油</span>';
     else resultTag = '<span class="ant-tag">需要巩固</span>';
     return (
-      "<tr><td>" + fmtClock(r.date) + "</td><td>" + pairTag + "</td><td>" +
-      r.total + "</td><td>" + rate + "%</td><td>" + resultTag + "</td></tr>"
+      '<tr><td data-label="时间">' + fmtClock(r.date) + '</td><td data-label="模式">' + pairTag + '</td><td data-label="题数">' +
+      r.total + '</td><td data-label="正确率">' + rate + '%</td><td data-label="结果">' + resultTag + "</td></tr>"
     );
   }
   function pairTagClass(pair) {
@@ -351,6 +353,23 @@
   }
   function emptyHint(text) {
     return '<div class="empty-hint">' + escapeHtml(text) + "</div>";
+  }
+
+  /* 窄屏表格卡片化兜底：把 thead 列名写入各 td 的 data-label，供 CSS 用 attr() 渲染标签；
+     渲染时已手写 data-label 的单元格不覆盖 */
+  function labelTables() {
+    $$(".ant-table").forEach((table) => {
+      const ths = Array.prototype.map.call(
+        table.querySelectorAll("thead th"),
+        (th) => th.textContent.trim()
+      );
+      table.querySelectorAll("tbody tr").forEach((tr) => {
+        const tds = tr.querySelectorAll("td");
+        for (let i = 0; i < tds.length; i++) {
+          if (!tds[i].hasAttribute("data-label") && ths[i]) tds[i].setAttribute("data-label", ths[i]);
+        }
+      });
+    });
   }
 
   /* ---------------- 答题页 ---------------- */
@@ -912,7 +931,7 @@
           s.wrongList
             .map(
               (w) =>
-                "<tr><td class=\"word-cell\">" + escapeHtml(w.char) + "</td><td>" + escapeHtml(w.word) +
+                "<tr><td class=\"word-cell\">" + escapeHtml(w.char) + "</td><td data-label=\"词语\">" + escapeHtml(w.word) +
                 "</td><td><span class=\"ant-tag " + pairTagClass(w.pair) + '">' + escapeHtml(Quiz.pairMeta(w.pair).label) +
                 '</span></td><td><span class="ant-tag red">' + escapeHtml(w.wrongPy) + "</span></td>" +
                 '<td><b style="color:var(--success)">' + escapeHtml(w.correctPy) + "</b></td></tr>"
@@ -1050,9 +1069,9 @@
           list
             .map(
               (m) =>
-                "<tr><td class=\"word-cell\">" + escapeHtml(m.char) + "</td><td>" + escapeHtml(wordOf(m)) +
+                "<tr><td class=\"word-cell\">" + escapeHtml(m.char) + "</td><td data-label=\"词语\">" + escapeHtml(wordOf(m)) +
                 "</td><td><span class=\"ant-tag " + pairTagClass(m.pair) + '">' + escapeHtml(Quiz.pairMeta(m.pair).label) +
-                '</span></td><td><b>' + escapeHtml(readingOf(m.char, m.pair)) + "</b></td><td>" + fmtTime(m.time) +
+                '</span></td><td><b>' + escapeHtml(readingOf(m.char, m.pair)) + "</b></td><td data-label=\"掌握时间\">" + fmtTime(m.time) +
                 '</td><td class="ops"><a onclick="App.revokeMastered(\'' + m.char + '\')">撤回</a></td></tr>'
             )
             .join("") +
@@ -1067,6 +1086,7 @@
         renderMastered();
       })
     );
+    labelTables();
   }
 
   function wordOf(m) {
@@ -1104,11 +1124,11 @@
           items
             .map(
               (it) =>
-                "<tr><td class=\"word-cell\">" + escapeHtml(it.char) + "</td><td>" + escapeHtml(it.word) +
+                "<tr><td class=\"word-cell\">" + escapeHtml(it.char) + "</td><td data-label=\"词语\">" + escapeHtml(it.word) +
                 "</td><td><span class=\"ant-tag " + pairTagClass(it.pair) + '">' + escapeHtml(Quiz.pairMeta(it.pair).label) +
                 '</span></td><td><span class="ant-tag red">' + escapeHtml(it.wrongPy) + "</span></td>" +
-                '<td><b style="color:var(--success)">' + escapeHtml(it.correctPy) + "</b></td><td>" + it.count + " 次</td>" +
-                "<td>" + fmtClock(it.lastTime) + "</td>" +
+                '<td><b style="color:var(--success)">' + escapeHtml(it.correctPy) + "</b></td><td data-label=\"出错次数\">" + it.count + " 次</td>" +
+                "<td data-label=\"最近出错\">" + fmtClock(it.lastTime) + "</td>" +
                 '<td class="ops"><a onclick="App.practiceOne(\'' + it.char + '\',\'' + it.pair + '\')">重练</a>' +
                 '<a class="danger" onclick="App.removeWrong(\'' + it.char + '\')">移除</a></td></tr>'
             )

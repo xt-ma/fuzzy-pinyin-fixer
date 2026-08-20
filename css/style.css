@@ -76,6 +76,7 @@ body {
   color: rgba(255, 255, 255, 0.65); text-decoration: none;
   padding: 0 20px; height: 100%; line-height: 64px;
   font-size: 14px; transition: color 0.2s; cursor: pointer;
+  white-space: nowrap; flex: none;   /* 窄屏下禁止逐字竖排折行 */
 }
 .topbar nav a:hover { color: #fff; }
 .topbar nav a.active { color: #fff; font-weight: 500; }
@@ -127,6 +128,7 @@ body {
   border: 1px solid var(--border); background: var(--surface); color: var(--text);
   cursor: pointer; text-decoration: none; user-select: none;
   transition: all 0.2s; line-height: 1; font-family: var(--font);
+  white-space: nowrap; flex-shrink: 0;
 }
 .ant-btn:hover { color: var(--primary); border-color: var(--primary); }
 .ant-btn:active { color: var(--primary-active); border-color: var(--primary-active); }
@@ -361,6 +363,7 @@ body {
 .segmented span {
   padding: 4px 14px; font-size: 13px; border-radius: var(--r-sm);
   color: var(--text-2); cursor: pointer; transition: all 0.2s; user-select: none;
+  white-space: nowrap; flex: none;   /* 「5 题 / 自定义」不允许竖排折行 */
 }
 .segmented span.active { background: var(--surface); color: var(--text); box-shadow: var(--shadow-1); font-weight: 500; }
 
@@ -410,7 +413,8 @@ body {
 @media (max-width: 900px) {
   .sider { display: none; }
   .topbar { padding: 0 var(--sp-4); }
-  .topbar nav { overflow-x: auto; }
+  .topbar nav { overflow-x: auto; scrollbar-width: none; } /* 导航项横向滚动，不折行 */
+  .topbar nav::-webkit-scrollbar { display: none; }
   .topbar nav a { padding: 0 12px; }
   .topbar .right { display: none; }
   .main { padding: var(--sp-4); }
@@ -489,6 +493,39 @@ body {
   .settings-item-title { font-size: 15px; }
   .ant-alert { font-size: 13px; }
   .popover-box { max-width: 92%; }
+
+  /* 题量选择：整行放不下时横向滚动，不折行 */
+  .segmented { max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+  .segmented::-webkit-scrollbar { display: none; }
+  .segmented span { padding: 5px 10px; }
+}
+
+/* ================= 窄屏表格 → 卡片列表（≤640px） =================
+   桌面多列表格在手机上会被压缩成逐字竖排，
+   窄屏下改为「标签 : 值」卡片行；需 td 携带 data-label 属性 */
+@media (max-width: 640px) {
+  .table-wrap { overflow: visible; }
+  .ant-table, .ant-table tbody, .ant-table tr, .ant-table td { display: block; width: 100%; }
+  .ant-table thead { display: none; }
+  .ant-table tr {
+    border: 1px solid var(--border-split); border-radius: var(--r-md);
+    margin-bottom: var(--sp-3); background: var(--surface); overflow: hidden;
+  }
+  .ant-table tr:last-child { margin-bottom: 0; }
+  .ant-table tr:hover td { background: transparent; }
+  .ant-table td {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: var(--sp-3); padding: 9px 12px;
+    border-bottom: 1px solid var(--border-split); text-align: right;
+  }
+  .ant-table td:last-child { border-bottom: none; }
+  .ant-table td::before {
+    content: attr(data-label);
+    color: var(--text-3); font-size: 13px; flex-shrink: 0; text-align: left;
+  }
+  .ant-table td .ant-tag { flex-shrink: 0; }
+  .ant-table .ops { justify-content: flex-end; gap: 16px; }
+  .ant-table .word-cell { font-size: 15px; }
 }
 
 /* 刘海屏安全区（viewport-fit=cover 时生效） */
