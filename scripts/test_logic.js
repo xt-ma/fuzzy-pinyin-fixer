@@ -159,7 +159,7 @@ const summary = Quiz.finishRound();
 ok(summary.total === 5, "summary.total = 5");
 ok(summary.correct === correct && summary.wrongList.length === wrong, "复盘统计一致");
 ok(Store.getHistory().length === 1, "history 写入 1 条");
-ok(Store.getWrongBook()[summary.wrongList[0].char] !== undefined || wrong === 0, "错题自动入错题本");
+ok(wrong === 0 || Store.getWrongBook()[summary.wrongList[0].char] !== undefined, "错题自动入错题本（全对时无错题可查）");
 
 // 2.4 错题重练：onlyChars 过滤
 const wbChars = Object.keys(Store.getWrongBook());
@@ -177,34 +177,44 @@ ok(!q4.some((q) => q.char === "男"), "已掌握字不在 l/n 出题池");
 const e1 = Quiz.makeQuestion(Quiz.allEntries("in/ing").find((e) => e.char === "京"));
 ok(Quiz.renderPy(e1.correct.py, "in/ing", "ng").includes('<span class="diff">'), "in/ing 差异高亮渲染");
 
-// 2.7 多字题：所有考察字都答错时，逐字计入错题本（如「呻吟」两字都错 → 都进错题本）
+// 2.7 多字题：所有考察字都答错时，逐字计入错题本
+// （确定性构造：用 makeQuestion 的 wordOverride 指定一个能产生多行题的词条；
+//   旧版靠 50 轮随机碰运气，约 0.5% 概率碰不到导致假失败）
 {
-  let target = null;
-  for (let i = 0; i < 50 && !target; i++) {
-    Quiz.startRound("mix", null, 20);
-    while (!Quiz.isFinished()) {
-      const q = Quiz.currentQuestion();
-      if (q.rows && q.rows.length >= 2) { target = q; break; }
-      // 非目标题：答对跳过（答对不产生错题干扰）
-      if (q.rows) {
-        q.rows.forEach((row, ri) => Quiz.answerRow(ri, row.options.find((o) => o.isCorrect)));
-        Quiz.commitQuestion();
-      } else {
-        Quiz.answer(q.options.find((o) => o.isCorrect));
+  // 遍历词库，按 makeQuestion 的行构造条件找 (条目, 词语)：词内含 ≥2 个可考字
+  let hit = null;
+  outer: for (const pair of Quiz.PAIR_ORDER) {
+    for (const e of Quiz.DATA.pairs[pair].entries) {
+      for (const w of e.words) {
+        const chars = Array.from(w.word);
+        const pys = String(w.pinyin).trim().split(/\s+/);
+        if (chars.length !== pys.length || chars.length < 2 || chars.length > 4) continue;
+        const seen = new Set();
+        let rows = 0;
+        for (let i = 0; i < chars.length; i++) {
+          const c = chars[i];
+          if (seen.has(c)) continue;
+          const hitLookup = (Quiz.CHAR_LOOKUP[c] || []).some((h) => h.reading === pys[i]);
+          if (c === e.char || hitLookup) { seen.add(c); rows++; }
+        }
+        if (rows >= 2) { hit = { entry: e, word: w }; break outer; }
       }
-      Quiz.next();
     }
   }
-  if (target) {
-    target.rows.forEach((row, ri) => Quiz.answerRow(ri, row.options.find((o) => !o.isCorrect)));
+  ok(!!hit, "词库存在可出多字题的（条目, 词语）组合");
+  if (hit) {
+    const q = Quiz.makeQuestion(hit.entry, hit.word);
+    ok(!!q.rows && q.rows.length >= 2, "指定词语构造出多字题（" + q.rows.map((r) => r.char).join("、") + "）");
+    // answerRow/commitQuestion 依赖轮次上下文（currentQuestion）
+    const round7 = Quiz.startRound("mix", null, 1, { source: "t" });
+    round7.questions = [q];
+    q.rows.forEach((row, ri) => Quiz.answerRow(ri, row.options.find((o) => !o.isCorrect)));
     Quiz.commitQuestion();
     const wb = Store.getWrongBook();
     ok(
-      target.rows.every((row) => wb[row.char]),
-      "多字题全错 → 每个考察字都入错题本（" + target.rows.map((r) => r.char).join("、") + "）"
+      q.rows.every((row) => wb[row.char]),
+      "多字题全错 → 每个考察字都入错题本（" + q.rows.map((r) => r.char).join("、") + "）"
     );
-  } else {
-    ok(false, "50 轮内应出现多字题");
   }
 }
 

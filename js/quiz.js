@@ -242,12 +242,15 @@
     ]);
   }
 
-  /* 构造一题 */
-  function makeQuestion(entry) {
+  /* 构造一题
+     wordOverride（可选）：指定题干词语，供测试确定性构造多字题；缺省随机选词 */
+  function makeQuestion(entry, wordOverride) {
     // 随机选词（词语题）；极少数无词条时退化为单字题
     const words = entry.words || [];
     let word = null;
-    if (words.length > 0) {
+    if (wordOverride) {
+      word = wordOverride;
+    } else if (words.length > 0) {
       word = words[Math.floor(Math.random() * words.length)];
     }
 
