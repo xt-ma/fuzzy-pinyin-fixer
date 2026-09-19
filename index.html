@@ -18,11 +18,11 @@
     <span class="brand-name">模糊音克星</span>
   </div>
   <nav id="topNav">
-    <a data-view="home" class="active">练习</a>
-    <a data-view="stats">统计</a>
-    <a data-view="mastered">已掌握</a>
-    <a data-view="wrongbook">错题本</a>
-    <a data-view="settings">设置</a>
+    <a data-view="home" class="active" role="button" tabindex="0">练习</a>
+    <a data-view="stats" role="button" tabindex="0">统计</a>
+    <a data-view="mastered" role="button" tabindex="0">已掌握</a>
+    <a data-view="wrongbook" role="button" tabindex="0">错题本</a>
+    <a data-view="settings" role="button" tabindex="0">设置</a>
   </nav>
   <div class="spacer"></div>
   <div class="right" id="topRight">v1.0 · 本地数据</div>
@@ -30,11 +30,11 @@
 
 <div class="layout">
   <aside class="sider" id="sider">
-    <a class="menu-item active" data-view="home"><span class="menu-icon">▣</span>练习</a>
-    <a class="menu-item" data-view="stats"><span class="menu-icon">▤</span>统计</a>
-    <a class="menu-item" data-view="mastered"><span class="menu-icon">✓</span>已掌握</a>
-    <a class="menu-item" data-view="wrongbook"><span class="menu-icon">✕</span>错题本</a>
-    <a class="menu-item" data-view="settings"><span class="menu-icon">⚙</span>设置</a>
+    <a class="menu-item active" data-view="home" role="button" tabindex="0"><span class="menu-icon">▣</span>练习</a>
+    <a class="menu-item" data-view="stats" role="button" tabindex="0"><span class="menu-icon">▤</span>统计</a>
+    <a class="menu-item" data-view="mastered" role="button" tabindex="0"><span class="menu-icon">✓</span>已掌握</a>
+    <a class="menu-item" data-view="wrongbook" role="button" tabindex="0"><span class="menu-icon">✕</span>错题本</a>
+    <a class="menu-item" data-view="settings" role="button" tabindex="0"><span class="menu-icon">⚙</span>设置</a>
   </aside>
 
   <main class="main">
@@ -61,10 +61,10 @@
         </div>
         <div class="quiz-progress-wrap">
           <div class="quiz-progress-label"><span id="quizModeLabel"></span><span id="quizProgressText"></span></div>
-          <div class="progress"><div class="bar" id="quizProgressBar" style="width:0%"></div></div>
+          <div class="progress" id="quizProgress" role="progressbar" aria-label="答题进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="bar" id="quizProgressBar" style="width:0%"></div></div>
         </div>
         <span class="ant-tag" id="quizPairTag"></span>
-        <button class="ant-btn" id="btnTtsToggle" onclick="App.toggleTts()" title="切换作答朗读">🔊</button>
+        <button class="ant-btn" id="btnTtsToggle" onclick="App.toggleTts()" title="切换作答朗读" aria-label="切换作答朗读" aria-pressed="true">🔊</button>
         <button class="ant-btn" id="btnMasteredTop" onclick="App.toggleMastered()">已掌握</button>
       </div>
       <div class="quiz-card" id="quizCard"></div>

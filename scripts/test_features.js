@@ -12,7 +12,7 @@ function ok(cond, name) {
 /* ---------- 环境（DOM 桩 + 元素注册表见 helpers/test-env.js） ----------
    timers=spy：记录被调度的回调但不执行——自动切题由测试手动驱动，
    且可断言"是否调度了自动前进"（回溯态不得调度） */
-const { els, spyTimers } = createAppEnv({ timers: "spy" });
+const { els, spyTimers, windowEvents } = createAppEnv({ timers: "spy" });
 els.viewQuiz.classList.add("active");
 
 evalModules(["js/store.js", "js/quiz.js", "js/app.js"]);
@@ -167,6 +167,15 @@ ok(Quiz.getRound().index === 1, "T7 继续作答回到最新题");
 App.toggleMastered();
 ok(Store.isMastered("辣"), "T7 最新题位标记成功");
 ok(spyTimers.filter(Boolean).length === schedBefore + 1, "T7 最新题位标记后调度自动前进");
+
+/* T8 键盘监听常驻：切换视图不再移除 keydown 监听
+   （原实现离开答题页时 removeEventListener，且从不重新绑定 → 快捷键永久失效） */
+App.show("home");
+App.show("quiz");
+App.show("stats");
+App.show("home");
+const removedKey = windowEvents.filter((e) => e.op === "remove" && e.type === "keydown");
+ok(removedKey.length === 0, "视图切换不移除 keydown 监听（handler 内部自守卫视图激活）");
 
 console.log(`\n结果：${pass} 通过 / ${fail} 失败`);
 if (fail > 0) process.exit(1);

@@ -429,6 +429,30 @@ body {
 .view { display: none; }
 .view.active { display: block; }
 
+/* ================= 无障碍与微动效 ================= */
+/* 键盘焦点可见（Tab / Enter / Space 导航） */
+:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+/* 反馈条浮现（对错反馈每次作答重现） */
+.ant-alert { animation: alertIn 0.18s ease; }
+@keyframes alertIn {
+  from { opacity: 0; transform: translateY(3px); }
+  to { opacity: 1; transform: none; }
+}
+/* 视图切换淡入 */
+.view.active { animation: viewIn 0.16s ease; }
+@keyframes viewIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+/* 用户偏好减少动效：动画/过渡即时完成 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 /* ================= 响应式 ================= */
 @media (max-width: 900px) {
   .sider { display: none; }

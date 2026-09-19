@@ -144,9 +144,9 @@
     $$("#topNav a, #sider .menu-item").forEach((a) => {
       a.classList.toggle("active", a.getAttribute("data-view") === view);
     });
-    // 答题中离开则终止轮次、停止残留朗读与待切题计时
+    // 答题中离开则停止残留朗读与待切题计时
+    // （keydown 监听常驻不移除：handler 内部自守卫视图激活；移除会导致离开答题页后快捷键永久失效）
     if (view !== "quiz") {
-      window.removeEventListener("keydown", quizKeyHandler);
       clearTimeout(autoNextTimer);
       if (window.TTS) TTS.stop();
     }
@@ -414,6 +414,7 @@
     if (!usable) return;
     const on = TTS.enabled();
     btn.textContent = on ? "🔊" : "🔇";
+    btn.setAttribute("aria-pressed", on ? "true" : "false");
     btn.classList.toggle("tts-off", !on);
   }
   function toggleTts() {
@@ -460,11 +461,16 @@
     $("#quizModeLabel").textContent =
       round.mode === "pair" ? meta.label + " 专项" : "综合随机";
     const infinite = !!round.infinite;
+    const prog = $("#quizProgress");
     if (infinite) {
       // 无限模式：显示已答题数，进度条为流动动画
       $("#quizProgressText").textContent = "无限模式 · 已答 " + (round.index + 1) + " 题";
       $("#quizProgressBar").className = "bar infinite";
       $("#quizProgressBar").style.width = "100%";
+      if (prog) {
+        prog.setAttribute("aria-valuetext", "已答 " + (round.index + 1) + " 题");
+        prog.removeAttribute("aria-valuenow");
+      }
       const quitBtn = $("#btnQuitQuiz");
       if (quitBtn) quitBtn.textContent = "结束本轮";
     } else {
@@ -472,6 +478,10 @@
       $("#quizProgressBar").className = "bar";
       $("#quizProgressBar").style.width =
         Math.round((round.index / round.questions.length) * 100) + "%";
+      if (prog) {
+        prog.setAttribute("aria-valuenow", String(Math.round((round.index / round.questions.length) * 100)));
+        prog.removeAttribute("aria-valuetext");
+      }
       const quitBtn = $("#btnQuitQuiz");
       if (quitBtn) quitBtn.textContent = "‹ 返回";
     }
@@ -1113,7 +1123,7 @@
                 "<tr><td class=\"word-cell\">" + escapeHtml(m.char) + "</td><td data-label=\"词语\">" + escapeHtml(wordOf(m)) +
                 "</td><td><span class=\"ant-tag " + pairTagClass(m.pair) + '">' + escapeHtml(Quiz.pairMeta(m.pair).label) +
                 '</span></td><td><b>' + escapeHtml(readingOf(m.char, m.pair)) + "</b></td><td data-label=\"掌握时间\">" + fmtTime(m.time) +
-                '</td><td class="ops"><a onclick="App.revokeMastered(\'' + m.char + '\')">撤回</a></td></tr>'
+                '</td><td class="ops"><a role="button" tabindex="0" onclick="App.revokeMastered(\'' + m.char + '\')">撤回</a></td></tr>'
             )
             .join("") +
           "</tbody></table></div>"
@@ -1168,8 +1178,8 @@
                 '</span></td><td><span class="ant-tag red">' + escapeHtml(it.wrongPy) + "</span></td>" +
                 '<td><b style="color:var(--success)">' + escapeHtml(it.correctPy) + "</b></td><td data-label=\"出错次数\">" + it.count + " 次</td>" +
                 "<td data-label=\"最近出错\">" + fmtClock(it.lastTime) + "</td>" +
-                '<td class="ops"><a onclick="App.practiceOne(\'' + it.char + '\',\'' + it.pair + '\')">重练</a>' +
-                '<a class="danger" onclick="App.removeWrong(\'' + it.char + '\')">移除</a></td></tr>'
+                '<td class="ops"><a role="button" tabindex="0" onclick="App.practiceOne(\'' + it.char + '\',\'' + it.pair + '\')">重练</a>' +
+                '<a role="button" tabindex="0" class="danger" onclick="App.removeWrong(\'' + it.char + '\')">移除</a></td></tr>'
             )
             .join("") +
           "</tbody></table></div>"
@@ -1575,6 +1585,15 @@
     }
     // 键盘
     window.addEventListener("keydown", quizKeyHandler);
+    // 无障碍：role="button" 的非原生按钮（导航项/表格操作链接）支持 Enter / Space 激活
+    document.addEventListener("keydown", (ev) => {
+      if (ev.key !== "Enter" && ev.key !== " ") return;
+      const t = ev.target;
+      if (!t || !t.getAttribute || t.getAttribute("role") !== "button") return;
+      if (t.tagName === "BUTTON" || t.tagName === "INPUT") return;
+      ev.preventDefault();
+      t.click();
+    });
     // 初始渲染（支持 ?view=stats 深链接）
     const v = new URLSearchParams(location.search).get("view");
     show(v && ["home", "stats", "mastered", "wrongbook", "settings"].indexOf(v) >= 0 ? v : "home");

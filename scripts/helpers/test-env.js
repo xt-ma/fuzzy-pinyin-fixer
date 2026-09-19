@@ -57,6 +57,7 @@ class StubEl {
   }
   setAttribute(k, v) { this.attrs[k] = String(v); }
   getAttribute(k) { return this.attrs[k] || null; }
+  removeAttribute(k) { delete this.attrs[k]; }
   addEventListener(ev, fn) { (this.listeners[ev] = this.listeners[ev] || []).push(fn); }
   focus() {} click() {}
   remove() { if (this.parent) { const i = this.parent.children.indexOf(this); if (i >= 0) this.parent.children.splice(i, 1); } }
@@ -148,7 +149,7 @@ function evalModules(files) {
 /* ---------- 标准应用环境（渲染层测试用，覆盖 app.js 引用的全部元素 ID） ---------- */
 const DEFAULT_DIV_IDS = [
   "toast", "homePairCards", "homeStats", "homeActions", "homeRecent",
-  "quizModeLabel", "quizProgressText", "quizProgressBar", "quizPairTag",
+  "quizModeLabel", "quizProgressText", "quizProgressBar", "quizPairTag", "quizProgress",
   "quizCard", "quizKeyHint", "btnQuitQuiz", "btnPrev", "btnResume", "btnMasteredTop",
   "resultBody", "masteredSearch", "wrongbookAction", "wrongbookBody",
   "settingsStats", "fsrsStatus", "syncHint", "syncStatus", "localKeyBox",
@@ -184,6 +185,7 @@ function createAppEnv(opts) {
 
   const domReadyFns = [];
   const spyTimers = [];
+  const windowEvents = [];
   global.document = {
     body: makeEl("body"),
     createElement: (t) => new StubEl(t),
@@ -204,9 +206,9 @@ function createAppEnv(opts) {
     },
     addEventListener: (ev, fn) => { if (ev === "DOMContentLoaded") domReadyFns.push(fn); },
   };
-  global.window.addEventListener = () => {};
+  global.window.addEventListener = (type, fn) => { windowEvents.push({ op: "add", type, fn }); };
+  global.window.removeEventListener = (type, fn) => { windowEvents.push({ op: "remove", type, fn }); };
   global.window.scrollTo = () => {};
-  global.window.removeEventListener = () => {};
   global.location = { search: "" };
   global.URLSearchParams = class { constructor() {} get() { return null; } };
   global.URL = { createObjectURL: () => "blob:m", revokeObjectURL: () => {} };
@@ -226,6 +228,7 @@ function createAppEnv(opts) {
     els,
     makeEl,
     spyTimers,
+    windowEvents,
     fireDomReady: () => domReadyFns.forEach((fn) => fn()),
   };
 }

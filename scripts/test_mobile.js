@@ -21,6 +21,7 @@ class El {
   get textContent() { return this._text ? this._text : this.children.map((c) => (c.tagName === "#text" ? c.text : c.textContent || "")).join(""); }
   setAttribute(k, v) { this.attrs[k] = String(v); }
   getAttribute(k) { return this.attrs[k] || null; }
+  removeAttribute(k) { delete this.attrs[k]; }
   addEventListener(ev, fn) { (this.listeners[ev] = this.listeners[ev] || []).push(fn); }
   focus() {} click() {}
   remove() { if (this.parent) { const i = this.parent.children.indexOf(this); if (i >= 0) this.parent.children.splice(i, 1); } }
@@ -38,7 +39,7 @@ const src = fs.readFileSync(path.join(ROOT, "data", "words.js"), "utf8");
 const json = src.replace(/^\/\/[^\n]*\n/, "").replace(/^window\.WORDS_DATA\s*=\s*/, "").replace(/;?\s*$/, "");
 const els = {};
 function makeEl(tag, id) { const e = new El(tag, id); if (id) els[id] = e; return e; }
-["toast","homePairCards","homeStats","homeActions","homeRecent","quizModeLabel","quizProgressText","quizProgressBar","quizPairTag","quizCard","quizKeyHint","btnQuitQuiz","btnPrev","btnResume","btnMasteredTop","btnTtsToggle","resultBody","masteredSearch","wrongbookAction","wrongbookBody","settingsStats","fsrsStatus","ttsDesc","syncHint","syncStatus","localKeyBox","statsCards","statsRange","statsCharts"].forEach((id) => makeEl("div", id));
+["toast","homePairCards","homeStats","homeActions","homeRecent","quizModeLabel","quizProgressText","quizProgressBar","quizPairTag","quizProgress","quizCard","quizKeyHint","btnQuitQuiz","btnPrev","btnResume","btnMasteredTop","btnTtsToggle","resultBody","masteredSearch","wrongbookAction","wrongbookBody","settingsStats","fsrsStatus","ttsDesc","syncHint","syncStatus","localKeyBox","statsCards","statsRange","statsCharts"].forEach((id) => makeEl("div", id));
 els.syncServer = makeEl("input", "syncServer"); els.remoteKeyInput = makeEl("input", "remoteKeyInput");
 els.syncAutoToggle = makeEl("input", "syncAutoToggle"); els.fsrsToggle = makeEl("input", "fsrsToggle");
 els.ttsToggle = makeEl("input", "ttsToggle");
@@ -131,6 +132,20 @@ const html = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
 ok(html.indexOf("viewport-fit=cover") >= 0, "index.html 含 viewport-fit=cover");
 ok(html.indexOf('rel="manifest"') >= 0, "index.html 引入 manifest");
 ok(html.indexOf("serviceWorker.register") >= 0, "index.html 注册 SW");
+
+/* ===== T5 无障碍静态检查（T12） ===== */
+console.log("== 5. 无障碍静态检查 ==");
+ok((html.match(/role="button"/g) || []).length === 10, "topNav + sider 共 10 个导航项均声明 role=button");
+ok((html.match(/tabindex="0"/g) || []).length === 10, "10 个导航项均可 Tab 聚焦");
+ok(html.indexOf('aria-label="切换作答朗读"') >= 0, "朗读开关带 aria-label");
+ok(html.indexOf('role="progressbar"') >= 0 && html.indexOf('aria-valuenow') >= 0, "答题进度条声明 progressbar 语义");
+const css = fs.readFileSync(path.join(ROOT, "css", "style.css"), "utf8");
+ok(css.indexOf(":focus-visible") >= 0, "样式表含 :focus-visible 焦点样式");
+ok(css.indexOf("prefers-reduced-motion") >= 0, "样式表尊重 prefers-reduced-motion");
+ok(css.indexOf("@keyframes alertIn") >= 0, "反馈条含浮现动效（alertIn）");
+const appSrc = fs.readFileSync(path.join(ROOT, "js", "app.js"), "utf8");
+ok(appSrc.indexOf('aria-pressed') >= 0, "朗读开关状态同步 aria-pressed");
+ok(appSrc.indexOf("removeEventListener(\"keydown\"") < 0, "视图切换不移除 keydown 监听（离开答题页后快捷键不再失效）");
 
 console.log("\n结果: " + pass + " 通过 / " + fail + " 失败");
 process.exit(fail ? 1 : 0);
