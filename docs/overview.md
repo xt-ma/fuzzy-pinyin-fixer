@@ -63,3 +63,10 @@
 - **配置卫生**：wrangler.toml（含 KV namespace ID）移出版本库，改用 wrangler.toml.example 模板
 - **UI 微调**：顶栏 logo 字号 15→17px（可辨形）；移动端 row-between 内 Tag 不再拉伸占整行；音对卡「N 字」不拆行
 - **测试规模**：8 套件 **255 断言**全绿（logic 32 / features 40 / sync 47 / fsrs 33 / sync_auto 32 / sync_ui 28 / mobile 17 / tts 26）；sw.js 缓存版本递增至 fpf-shell-v7
+
+**2026-09-19（v2 体验与重构：T12-T14）**
+- **T12 无障碍与微动效**：导航/表格操作链接 role=button + tabindex + Enter/Space 激活委托；:focus-visible 焦点环；朗读开关 aria-pressed；进度条 progressbar 语义；反馈条/视图切换动效并尊重 prefers-reduced-motion；顺带修复键盘快捷键真 bug（离开答题页后监听被移除且从不重绑）
+- **T13 薄弱字 TOP 10**：统计页新增排行（cards 按 pair:char 聚合，错误次数→正确率→最近作答排序），每行带单字重练入口
+- **T14 渲染层拆分**：app.js（1589 行）拆为 js/ui.js（window.UI 共享工具）+ 7 个 js/view-*.js（window.Views 视图模块）+ 瘦控制器 app.js（切换/入口/事件绑定）；script 加载顺序 words→fsrs→store→tts→sync→quiz→ui→views→app
+- **拆分中发现并修复 ASI 隐藏 bug 家族**：4 处字符串拼接在 `))` 后换行直接跟 `"</div>"`（缺 `+`），ASI 使其成为被丢弃的独立语句——首页/复盘/已掌握的卡片闭合 div 丢失（浏览器自动补全掩盖），错题本底部说明 alert 从未渲染过；已补齐并在测试中断言
+- 测试规模：8 套件 **275 断言**全绿（logic 32 / features 49 / sync 47 / fsrs 33 / sync_auto 32 / sync_ui 28 / mobile 28 / tts 26）；sw 壳缓存 v9→v10

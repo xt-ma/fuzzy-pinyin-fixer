@@ -6,7 +6,7 @@
    - 更新：版本号 + skipWaiting/clientsClaim，发布新版本自动生效
    仅 https 环境生效（file:// 下浏览器不注册本文件）
    ============================================================ */
-const CACHE_NAME = "fpf-shell-v9"; // 每次发版递增：activate 时删除旧缓存，配合 skipWaiting 立即生效
+const CACHE_NAME = "fpf-shell-v10"; // 每次发版递增：activate 时删除旧缓存，配合 skipWaiting 立即生效
 const SHELL_ASSETS = [
   "./",
   "./css/style.css",
@@ -14,6 +14,14 @@ const SHELL_ASSETS = [
   "./js/fsrs.js",
   "./js/tts.js",
   "./js/quiz.js",
+  "./js/ui.js",
+  "./js/view-home.js",
+  "./js/view-quiz.js",
+  "./js/view-result.js",
+  "./js/view-stats.js",
+  "./js/view-mastered.js",
+  "./js/view-wrongbook.js",
+  "./js/view-settings.js",
   "./js/sync.js",
   "./js/app.js",
   "./data/words.js",

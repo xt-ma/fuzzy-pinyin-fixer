@@ -22,7 +22,12 @@ global.fetch = async (url, opts) => {
   return { ok: true, status: 200, json: async () => ({ ok: true }) };
 };
 
-evalModules(["js/fsrs.js", "js/store.js", "js/quiz.js", "js/sync.js", "js/app.js"]);
+evalModules([
+  "js/fsrs.js", "js/store.js", "js/quiz.js", "js/sync.js", "js/ui.js",
+  "js/view-home.js", "js/view-quiz.js", "js/view-result.js", "js/view-stats.js",
+  "js/view-mastered.js", "js/view-wrongbook.js", "js/view-settings.js",
+  "js/app.js",
+]);
 global.Store = global.window.Store; global.FSRS = global.window.FSRS;
 global.Quiz = global.window.Quiz; global.Sync = global.window.Sync;
 const Store = global.window.Store, App = global.window.App, Sync = global.window.Sync;

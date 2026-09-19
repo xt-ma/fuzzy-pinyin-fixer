@@ -44,7 +44,9 @@ js/store.js           localStorage 数据层（wrongBook/mastered/history/settin
 js/fsrs.js            FSRS-6 间隔重复调度核心（从 fsrs4anki v6.1.1 移植，纯 JS 零依赖）
 js/sync.js            自动云同步模块（密钥生成/状态机/拉取推送/失败重试，配合 cloudflare/）
 js/quiz.js            题目生成与轮次状态机（考点粒度=字+读音，含多字题 rows / FSRS 到期队列出题）
-js/app.js             视图渲染与交互（首页/答题/复盘/统计/已掌握/错题本/设置 + 触屏键盘提示切换）
+js/ui.js              共享 UI 工具（window.UI：toast/popconfirm/统计聚合/表格卡片化标注等）
+js/view-*.js          视图模块（window.Views：home/quiz/result/stats/mastered/wrongbook/settings）
+js/app.js             应用控制器（视图切换/练习入口/App 全局动作/全局事件绑定与初始化）
 data/words.js         词库数据（构建产物，供 <script> 直接加载）
 data/words.json       词库数据（可审计的 JSON 源）
 cloudflare/           Cloudflare Worker 同步服务（index.js + wrangler.toml.example；

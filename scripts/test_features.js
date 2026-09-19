@@ -15,7 +15,12 @@ function ok(cond, name) {
 const { els, spyTimers, windowEvents } = createAppEnv({ timers: "spy" });
 els.viewQuiz.classList.add("active");
 
-evalModules(["js/store.js", "js/quiz.js", "js/app.js"]);
+evalModules([
+  "js/store.js", "js/quiz.js", "js/ui.js",
+  "js/view-home.js", "js/view-quiz.js", "js/view-result.js", "js/view-stats.js",
+  "js/view-mastered.js", "js/view-wrongbook.js", "js/view-settings.js",
+  "js/app.js",
+]);
 /* app.js/quiz.js 内部以裸标识符引用 Store/Quiz，需挂到 global 供 eval 作用域解析 */
 global.Store = global.window.Store;
 global.Quiz = global.window.Quiz;
@@ -192,6 +197,19 @@ ok(weakHtml.indexOf("重练") >= 0 && els.statsWeak.innerHTML.indexOf("practiceO
 Store.clearAll();
 App.show("stats");
 ok(els.statsWeak.textContent.indexOf("暂无薄弱字") >= 0, "T9 无错题时显示空状态");
+
+/* T10 渲染分支覆盖：首页最近练习表（有时间数据）/ 已掌握页数据态与空态
+   （拆分模块后解构遗漏只在特定分支触发——空态与非空态都要渲染一遍） */
+Store.clearAll();
+Store.addHistory({ mode: "mix", pair: null, total: 10, correct: 8, durationSec: 60 });
+Store.addMastered("盯", "in/ing");
+App.show("home");
+ok(els.homeRecent.textContent.indexOf("今天") >= 0, "T10 首页最近练习表渲染（时间格式化分支）");
+App.show("mastered");
+ok(els.masteredBody.textContent.indexOf("盯") >= 0 && els.masteredBody.innerHTML.indexOf("empty-hint") < 0, "T10 已掌握页数据态渲染");
+Store.removeMastered("盯");
+App.show("mastered");
+ok(els.masteredBody.innerHTML.indexOf("empty-hint") >= 0, "T10 已掌握页空态渲染");
 
 console.log(`\n结果：${pass} 通过 / ${fail} 失败`);
 if (fail > 0) process.exit(1);

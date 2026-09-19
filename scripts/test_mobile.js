@@ -39,7 +39,7 @@ const src = fs.readFileSync(path.join(ROOT, "data", "words.js"), "utf8");
 const json = src.replace(/^\/\/[^\n]*\n/, "").replace(/^window\.WORDS_DATA\s*=\s*/, "").replace(/;?\s*$/, "");
 const els = {};
 function makeEl(tag, id) { const e = new El(tag, id); if (id) els[id] = e; return e; }
-["toast","homePairCards","homeStats","homeActions","homeRecent","quizModeLabel","quizProgressText","quizProgressBar","quizPairTag","quizProgress","quizCard","quizKeyHint","btnQuitQuiz","btnPrev","btnResume","btnMasteredTop","btnTtsToggle","resultBody","masteredSearch","wrongbookAction","wrongbookBody","settingsStats","fsrsStatus","ttsDesc","syncHint","syncStatus","localKeyBox","statsCards","statsRange","statsCharts","statsWeak"].forEach((id) => makeEl("div", id));
+["toast","homePairCards","homeStats","homeActions","homeRecent","quizModeLabel","quizProgressText","quizProgressBar","quizPairTag","quizProgress","quizCard","quizKeyHint","btnQuitQuiz","btnPrev","btnResume","btnMasteredTop","btnTtsToggle","resultBody","masteredSearch","masteredBody","wrongbookAction","wrongbookBody","settingsStats","fsrsStatus","ttsDesc","syncHint","syncStatus","localKeyBox","statsCards","statsRange","statsCharts","statsWeak"].forEach((id) => makeEl("div", id));
 els.syncServer = makeEl("input", "syncServer"); els.remoteKeyInput = makeEl("input", "remoteKeyInput");
 els.syncAutoToggle = makeEl("input", "syncAutoToggle"); els.fsrsToggle = makeEl("input", "fsrsToggle");
 els.ttsToggle = makeEl("input", "ttsToggle");
@@ -73,6 +73,10 @@ eval(fs.readFileSync(path.join(ROOT, "js", "quiz.js"), "utf8"));
 global.Quiz = global.window.Quiz; global.Store = global.window.Store; global.FSRS = global.window.FSRS;
 eval(fs.readFileSync(path.join(ROOT, "js", "sync.js"), "utf8"));
 global.Sync = global.window.Sync;
+eval(fs.readFileSync(path.join(ROOT, "js", "ui.js"), "utf8"));
+["view-home", "view-quiz", "view-result", "view-stats", "view-mastered", "view-wrongbook", "view-settings"].forEach((v) => {
+  eval(fs.readFileSync(path.join(ROOT, "js", v + ".js"), "utf8"));
+});
 eval(fs.readFileSync(path.join(ROOT, "js", "app.js"), "utf8"));
 const App = global.window.App;
 if (domReadyFn) domReadyFn();
@@ -144,8 +148,12 @@ ok(css.indexOf(":focus-visible") >= 0, "样式表含 :focus-visible 焦点样式
 ok(css.indexOf("prefers-reduced-motion") >= 0, "样式表尊重 prefers-reduced-motion");
 ok(css.indexOf("@keyframes alertIn") >= 0, "反馈条含浮现动效（alertIn）");
 const appSrc = fs.readFileSync(path.join(ROOT, "js", "app.js"), "utf8");
-ok(appSrc.indexOf('aria-pressed') >= 0, "朗读开关状态同步 aria-pressed");
+const quizViewSrc = fs.readFileSync(path.join(ROOT, "js", "view-quiz.js"), "utf8");
+ok(quizViewSrc.indexOf('aria-pressed') >= 0, "朗读开关状态同步 aria-pressed");
 ok(appSrc.indexOf("removeEventListener(\"keydown\"") < 0, "视图切换不移除 keydown 监听（离开答题页后快捷键不再失效）");
+ok(html.indexOf('js/ui.js') >= 0 && html.indexOf('js/view-quiz.js') >= 0 && html.indexOf('js/view-settings.js') >= 0, "index.html 加载 ui 与视图模块");
+const swSrc = fs.readFileSync(path.join(ROOT, "sw.js"), "utf8");
+ok(swSrc.indexOf('"./js/ui.js"') >= 0 && swSrc.indexOf('"./js/view-quiz.js"') >= 0 && swSrc.indexOf('"./js/view-settings.js"') >= 0, "SW 壳缓存包含 ui 与视图模块");
 
 console.log("\n结果: " + pass + " 通过 / " + fail + " 失败");
 process.exit(fail ? 1 : 0);

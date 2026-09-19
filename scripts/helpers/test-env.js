@@ -151,7 +151,7 @@ const DEFAULT_DIV_IDS = [
   "toast", "homePairCards", "homeStats", "homeActions", "homeRecent",
   "quizModeLabel", "quizProgressText", "quizProgressBar", "quizPairTag", "quizProgress",
   "quizCard", "quizKeyHint", "btnQuitQuiz", "btnPrev", "btnResume", "btnMasteredTop",
-  "resultBody", "masteredSearch", "wrongbookAction", "wrongbookBody",
+  "resultBody", "masteredSearch", "masteredBody", "wrongbookAction", "wrongbookBody",
   "settingsStats", "fsrsStatus", "syncHint", "syncStatus", "localKeyBox",
   "statsCards", "statsRange", "statsCharts", "statsWeak", "ttsDesc",
 ];
