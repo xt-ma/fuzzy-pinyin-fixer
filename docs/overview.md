@@ -69,4 +69,5 @@
 - **T13 薄弱字 TOP 10**：统计页新增排行（cards 按 pair:char 聚合，错误次数→正确率→最近作答排序），每行带单字重练入口
 - **T14 渲染层拆分**：app.js（1589 行）拆为 js/ui.js（window.UI 共享工具）+ 7 个 js/view-*.js（window.Views 视图模块）+ 瘦控制器 app.js（切换/入口/事件绑定）；script 加载顺序 words→fsrs→store→tts→sync→quiz→ui→views→app
 - **拆分中发现并修复 ASI 隐藏 bug 家族**：4 处字符串拼接在 `))` 后换行直接跟 `"</div>"`（缺 `+`），ASI 使其成为被丢弃的独立语句——首页/复盘/已掌握的卡片闭合 div 丢失（浏览器自动补全掩盖），错题本底部说明 alert 从未渲染过；已补齐并在测试中断言
-- 测试规模：8 套件 **275 断言**全绿（logic 32 / features 49 / sync 47 / fsrs 33 / sync_auto 32 / sync_ui 28 / mobile 28 / tts 26）；sw 壳缓存 v9→v10
+- 测试规模：8 套件 **277 断言**全绿（logic 34 / features 49 / sync 47 / fsrs 33 / sync_auto 32 / sync_ui 28 / mobile 28 / tts 26）；sw 壳缓存 v9→v10；
+  另根除 test_logic 两处偶发失败（随机碰词 + wrongList 空取值），压测 600 次零失败

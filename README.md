@@ -71,18 +71,18 @@ scripts/              词库构建与测试脚本（helpers/ 为测试共享桩�
 
 ```bash
 npm test                        # 一键运行全部套件（等价 node scripts/test_all.js）
-node scripts/test_logic.js      # 词库完整性 + 出题逻辑（32 项断言）
-node scripts/test_features.js   # 已掌握按钮 + 回溯 + 回溯态已掌握交互（40 项断言）
+node scripts/test_logic.js      # 词库完整性 + 出题逻辑（34 项断言）
+node scripts/test_features.js   # 已掌握按钮 + 回溯 + 回溯态已掌握交互（49 项断言）
 node scripts/test_sync.js       # 数据导出/导入/合并/校验（47 项断言）
 node scripts/test_fsrs.js       # FSRS 调度 + 到期队列 + 回滚切换（33 项断言）
 node scripts/test_sync_auto.js  # 自动云同步：密钥/打点/推送/重试/双设备（32 项断言）
 node scripts/test_sync_ui.js    # 同步设置区 UI：绑定/校验/警告/清除数据（28 项断言）
-node scripts/test_mobile.js     # 移动端适配：键盘提示切换 + PWA 文件（17 项断言）
+node scripts/test_mobile.js     # 移动端适配 + 无障碍/PWA/模块加载静态检查（28 项断言）
 node scripts/test_tts.js        # TTS：开关/voice 选择/超时兜底/引擎降级（26 项断言）
 python scripts/analyze_wordfreq.py # 词频表组词覆盖率分析（docs/wordfreq_analysis.json）
 ```
 
-共 **8 个套件 / 255 项断言**。提交前自动跑测试：启用仓库自带的 pre-commit 钩子（每个克隆执行一次）：
+共 **8 个套件 / 277 项断言**。提交前自动跑测试：启用仓库自带的 pre-commit 钩子（每个克隆执行一次）：
 
 ```bash
 git config core.hooksPath scripts/git-hooks
