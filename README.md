@@ -9,6 +9,7 @@
 - 整词展示 + 目标字高亮 + 二选一（如"天津"考"津" → jīn / jīng）
 - **双音对 4 选项**：读音同时落在鼻音韵母组与 l/n 的字（如「凝」níng）给出 nin/ning/lin/ling 四选（正确 + 韵母混淆 + 声母混淆 + 双重混淆）
 - **多字题**：词内其他可考字一并考察，逐行作答（如"新娘" → 新 xin/xing + 娘 niang/liang）
+- **多音字双读音**：同一音对内多音字的不同读音（如「尽」jǐn/jìn）视为不同考点，均可出题；已掌握仍按字整体排除
 - **已掌握常驻按钮**（右上角）：随时标记/撤回，不影响对错判定；标记后该字不再出题、错题本对应记录置为失效（撤回恢复）；多字题可多选
 - **上一题回溯**（左下角按钮 / 快捷键 ←）：本轮内可回看任意已答题（只读锁定态），「继续作答」回到最新位置
 - 答对自动下一题；答错进错题本，可一键重练
@@ -36,19 +37,20 @@ python -m http.server 8734
 index.html            单页应用入口（file:// 可直接运行）
 manifest.json         PWA 配置（应用名/主题色/图标）
 sw.js                 PWA Service Worker（应用壳缓存，仅 https 生效）
+package.json          仅承载 npm test 脚本入口（零依赖，无 node_modules）
 icons/icon-192.png    PWA 图标（192×192）
-icons/icon-512.png    PWA 图标（512×512）
 css/style.css         全局样式（基于 docs/design-spec.md 方案 C tokens + 响应式/触屏适配）
 js/store.js           localStorage 数据层（wrongBook/mastered/history/settings/reviews/cards + FSRS 调度写入）
 js/fsrs.js            FSRS-6 间隔重复调度核心（从 fsrs4anki v6.1.1 移植，纯 JS 零依赖）
 js/sync.js            自动云同步模块（密钥生成/状态机/拉取推送/失败重试，配合 cloudflare/）
-js/quiz.js            题目生成与轮次状态机（含多字题 rows / FSRS 到期队列出题）
+js/quiz.js            题目生成与轮次状态机（考点粒度=字+读音，含多字题 rows / FSRS 到期队列出题）
 js/app.js             视图渲染与交互（首页/答题/复盘/统计/已掌握/错题本/设置 + 触屏键盘提示切换）
 data/words.js         词库数据（构建产物，供 <script> 直接加载）
 data/words.json       词库数据（可审计的 JSON 源）
-cloudflare/           Cloudflare Worker 同步服务（index.js + wrangler.toml）
+cloudflare/           Cloudflare Worker 同步服务（index.js + wrangler.toml.example；
+                      实际 wrangler.toml 含 KV namespace ID，已 gitignore 不入库）
 docs/                 PRD、设计规范、数据设计、分析报告、部署教程
-scripts/              词库构建与测试脚本
+scripts/              词库构建与测试脚本（helpers/ 为测试共享桩；git-hooks/ 为 pre-commit 钩子）
 ```
 
 ## 部署（多端云同步）
@@ -66,14 +68,22 @@ scripts/              词库构建与测试脚本
 数据校验与逻辑测试：
 
 ```bash
-node scripts/test_logic.js      # 词库完整性 + 出题逻辑（27 项断言）
-node scripts/test_features.js   # 已掌握按钮 + 回溯功能（32 项断言）
+npm test                        # 一键运行全部套件（等价 node scripts/test_all.js）
+node scripts/test_logic.js      # 词库完整性 + 出题逻辑（32 项断言）
+node scripts/test_features.js   # 已掌握按钮 + 回溯 + 回溯态已掌握交互（40 项断言）
 node scripts/test_sync.js       # 数据导出/导入/合并/校验（47 项断言）
 node scripts/test_fsrs.js       # FSRS 调度 + 到期队列 + 回滚切换（33 项断言）
 node scripts/test_sync_auto.js  # 自动云同步：密钥/打点/推送/重试/双设备（32 项断言）
 node scripts/test_sync_ui.js    # 同步设置区 UI：绑定/校验/警告/清除数据（28 项断言）
 node scripts/test_mobile.js     # 移动端适配：键盘提示切换 + PWA 文件（17 项断言）
+node scripts/test_tts.js        # TTS：开关/voice 选择/超时兜底/引擎降级（26 项断言）
 python scripts/analyze_wordfreq.py # 词频表组词覆盖率分析（docs/wordfreq_analysis.json）
+```
+
+共 **8 个套件 / 255 项断言**。提交前自动跑测试：启用仓库自带的 pre-commit 钩子（每个克隆执行一次）：
+
+```bash
+git config core.hooksPath scripts/git-hooks
 ```
 
 ## 文档

@@ -50,3 +50,16 @@
 - FSRS rating 扩展：当前 2 档（答对 3 / 答错 1），可加"简单/一般"自评映射 easy/good（零迁移）
 - 多字题回溯提示（L3 发现）：当前多行题答完后回溯提示不带「← 回看上一题」，可后续对齐单行分支
 - 真人发音 TTS 属 Out of Scope
+
+## 更新记录
+
+**2026-09-19（工程质量专项 T1-T9）**
+- **测试门禁建立**：修复 test_sync_ui.js（TTS 元素缺失致整套件失效一个月）；新增 `scripts/test_all.js` 聚合入口 + `npm test` + pre-commit 钩子（`scripts/git-hooks/`，启用：`git config core.hooksPath scripts/git-hooks`）
+- **多音字双读音进题池**：出题去重粒度由"字"细化为"字+读音"（25 个同音对双读音字生效，如「尽」jǐn/jìn）；已掌握仍按字整体排除；无限模式补题按复合键排重；PRD 出题规则同步更新
+- **回溯态交互修正**：回溯查看历史题时点「已掌握」不再自动前进到下一道历史题（`isAtLatest` 才调度自动切题）
+- **修复筛选激活态 bug**：「已掌握」页音对筛选的激活高亮改 class 实现（旧 outline 内联方案被 innerHTML 重建抹掉，激活态从未真正显示）
+- **测试基建**：8 套件重复手写的 DOM 桩抽取为 `scripts/helpers/test-env.js`（含 spy/immediate/manual 三种定时器策略）
+- **代码卫生**：删除死变量、escapeHtml 收敛为唯一实现（quiz.js 导出）、addHistory 魔法数改用 HISTORY_LIMIT、sw.js 移除 icon-512 残留
+- **配置卫生**：wrangler.toml（含 KV namespace ID）移出版本库，改用 wrangler.toml.example 模板
+- **UI 微调**：顶栏 logo 字号 15→17px（可辨形）；移动端 row-between 内 Tag 不再拉伸占整行；音对卡「N 字」不拆行
+- **测试规模**：8 套件 **255 断言**全绿（logic 32 / features 40 / sync 47 / fsrs 33 / sync_auto 32 / sync_ui 28 / mobile 17 / tts 26）；sw.js 缓存版本递增至 fpf-shell-v7
