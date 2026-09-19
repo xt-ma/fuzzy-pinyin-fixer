@@ -7,13 +7,8 @@
   const $ = (sel) => document.querySelector(sel);
   const $$ = (sel) => Array.from(document.querySelectorAll(sel));
 
-  function escapeHtml(s) {
-    return String(s == null ? "" : s)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;");
-  }
+  /* HTML 转义唯一实现（quiz.js 导出，app.js 复用） */
+  const escapeHtml = (s) => Quiz.escapeHtml(s);
 
   /* ---------------- Toast ---------------- */
   let toastTimer = null;
@@ -182,7 +177,7 @@
         '<div class="ant-card hoverable" onclick="App.startPair(\'' + p + '\')">' +
         '<div class="card-body pair-card">' +
         '<div class="pair-name" style="color:' + color + '">' + escapeHtml(ps.meta.label) + "</div>" +
-        '<div class="pair-desc">' + escapeHtml(ps.meta.desc) + " · " + ps.meta.totalEntries + " 字</div>" +
+        '<div class="pair-desc">' + escapeHtml(ps.meta.desc) + ' · <span class="nowrap">' + ps.meta.totalEntries + " 字</span></div>" +
         '<div class="pair-bar"><i style="width:' + rate + "%;background:" + color + '"></i></div>' +
         '<div class="pair-meta">正确率 ' + (ps.rate == null ? "--" : ps.rate + "%") + "</div>" +
         "</div></div>"
@@ -193,7 +188,7 @@
       '<div class="ant-card hoverable big" onclick="App.startMix()">' +
       '<div class="card-body pair-card">' +
       '<div class="pair-name" style="color:var(--primary)">综合随机</div>' +
-      '<div class="pair-desc">混合所有音对 · ' + totalEntries() + " 字</div>" +
+      '<div class="pair-desc">混合所有音对 · <span class="nowrap">' + totalEntries() + " 字</span></div>" +
       '<div class="pair-bar"><i style="width:' + overallRateOf(stats) + '%;background:var(--primary)"></i></div>' +
       '<div class="pair-meta" style="color:var(--primary)">推荐 · 每日一练</div>' +
       "</div></div>";
@@ -653,7 +648,8 @@
       revealCorrectOptions(q, [char]);
       updateMasteredBtn(q);
       toast("已标记「" + char + "」为已掌握");
-      scheduleNext(1000); // 标记后 1 秒自动下一题（统一节奏）
+      // 仅在最新题位自动前进；回溯查看历史时留在原地（不跳到下一道历史题）
+      if (Quiz.isAtLatest()) scheduleNext(1000);
     }
   }
 
@@ -700,7 +696,8 @@
         updateMasteredBtn(q);
         if (pickedChars.size) {
           toast("已标记 " + pickedChars.size + " 个字为已掌握");
-          scheduleNext(1000);
+          // 仅在最新题位自动前进；回溯查看历史时留在原地
+          if (Quiz.isAtLatest()) scheduleNext(1000);
         } else {
           clearTimeout(autoNextTimer);
           toast("已撤回全部已掌握标记");
@@ -805,7 +802,6 @@
     if (!btn || btn.disabled) return;
     const feedback = $("#quizCard .quiz-feedback");
     const actions = $("#quizCard .quiz-actions");
-    const tip = $("#quizCard .quiz-mastered-tip");
 
     if (rows) {
       // ---- 多行题：逐行作答，整题完成前允许修改已答行 ----
@@ -886,7 +882,6 @@
     });
     const feedback = $("#quizCard .quiz-feedback");
     const actions = $("#quizCard .quiz-actions");
-    const tip = $("#quizCard .quiz-mastered-tip");
     if (res.correct) {
       feedback.innerHTML =
         '<div class="ant-alert success"><span>✔</span><span><b>回答正确！</b>' +
@@ -1101,10 +1096,10 @@
       '<span class="ant-tag blue">约 ' + pct + "% 已认全</span></div>" +
       '<div class="progress" style="margin-bottom:16px"><div class="bar" style="width:' + pct + '%"></div></div>' +
       '<div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap" id="mFilter">' +
-      '<span class="ant-tag blue clickable" data-f="all">全部</span>' +
+      '<span class="ant-tag blue clickable' + (masteredFilter === "all" ? " filter-on" : "") + '" data-f="all">全部</span>' +
       Quiz.PAIR_ORDER.map(
         (p) =>
-          '<span class="ant-tag ' + pairTagClass(p) + ' clickable" data-f="' + p + '">' +
+          '<span class="ant-tag ' + pairTagClass(p) + ' clickable' + (masteredFilter === p ? " filter-on" : "") + '" data-f="' + p + '">' +
           escapeHtml(Quiz.pairMeta(p).label) + "</span>"
       ).join("") +
       "</div>" +
@@ -1127,9 +1122,7 @@
     $$("#mFilter .ant-tag").forEach((t) =>
       t.addEventListener("click", () => {
         masteredFilter = t.getAttribute("data-f");
-        $$("#mFilter .ant-tag").forEach((x) => (x.style.outline = ""));
-        t.style.outline = "2px solid var(--primary)";
-        renderMastered();
+        renderMastered(); // 重渲染时按 masteredFilter 标出激活项（旧 outline 内联方案会被 innerHTML 重建抹掉）
       })
     );
     labelTables();

@@ -201,8 +201,8 @@
     addHistory(rec) {
       const h = this.getHistory();
       h.push(Object.assign({ date: Date.now() }, rec));
-      // 只保留最近 500 条
-      if (h.length > 500) h.splice(0, h.length - 500);
+      // 只保留最近 HISTORY_LIMIT 条
+      if (h.length > HISTORY_LIMIT) h.splice(0, h.length - HISTORY_LIMIT);
       this.set("history", h);
     },
     /* ---------- reviews：每次作答流水（对错都记，追加式） ----------
