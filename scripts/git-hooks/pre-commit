@@ -1,0 +1,10 @@
+#!/bin/sh
+# pre-commit：提交前运行全部测试套件，失败则拦截提交
+# 启用方式（每个克隆执行一次）：git config core.hooksPath scripts/git-hooks
+echo "[pre-commit] 运行测试套件（node scripts/test_all.js）…"
+node "$(git rev-parse --show-toplevel)/scripts/test_all.js" || {
+  echo ""
+  echo "[pre-commit] ✗ 测试未全部通过，提交被拦截。"
+  echo "              跳过检查（不推荐）：git commit --no-verify"
+  exit 1
+}

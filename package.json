@@ -1,0 +1,8 @@
+{
+  "name": "fuzzy-pinyin-fixer",
+  "private": true,
+  "description": "模糊音克星 · 纠正方言模糊音的练习工具（纯前端零依赖，package.json 仅承载脚本入口，无任何依赖）",
+  "scripts": {
+    "test": "node scripts/test_all.js"
+  }
+}

@@ -5,9 +5,7 @@
    运行：node scripts/test_sync_auto.js
    ============================================================ */
 "use strict";
-const fs = require("fs");
-const path = require("path");
-const ROOT = path.join(__dirname, "..");
+const { memLocalStorage, loadWordsData, evalModules, createManualTimers } = require("./helpers/test-env.js");
 let pass = 0, fail = 0;
 function ok(cond, name) {
   if (cond) { pass++; console.log("  ✓ " + name); }
@@ -15,33 +13,14 @@ function ok(cond, name) {
 }
 
 /* ---------- 可控定时器（同步执行，等待异步完成） ---------- */
-let timers = [];
-global.setTimeout = (fn) => { timers.push(fn); return timers.length; };
-global.clearTimeout = (id) => { if (id && timers[id - 1] !== null) timers[id - 1] = null; };
-async function runTimersAsync() {
-  let guard = 0;
-  while (guard++ < 50) {
-    const t = timers.filter(Boolean);
-    timers = [];
-    if (!t.length) break;
-    for (const fn of t) await fn();
-    for (let i = 0; i < 5; i++) await Promise.resolve();
-  }
-}
+const timers = createManualTimers();
+global.setTimeout = timers.setTimeout;
+global.clearTimeout = timers.clearTimeout;
 
 /* ---------- 环境 ---------- */
-global.localStorage = (() => { const s = {}; return {
-  getItem: (k) => (k in s ? s[k] : null),
-  setItem: (k, v) => { s[k] = String(v); },
-  removeItem: (k) => { delete s[k]; },
-};})();
-const src = fs.readFileSync(path.join(ROOT, "data", "words.js"), "utf8");
-const json = src.replace(/^\/\/[^\n]*\n/, "").replace(/^window\.WORDS_DATA\s*=\s*/, "").replace(/;?\s*$/, "");
-global.window = { WORDS_DATA: JSON.parse(json) };
-eval(fs.readFileSync(path.join(ROOT, "js", "fsrs.js"), "utf8"));
-eval(fs.readFileSync(path.join(ROOT, "js", "store.js"), "utf8"));
-eval(fs.readFileSync(path.join(ROOT, "js", "sync.js"), "utf8"));
-eval(fs.readFileSync(path.join(ROOT, "js", "quiz.js"), "utf8"));
+global.localStorage = memLocalStorage();
+global.window = { WORDS_DATA: loadWordsData() };
+evalModules(["js/fsrs.js", "js/store.js", "js/sync.js", "js/quiz.js"]);
 const Store = global.window.Store, Sync = global.window.Sync;
 global.Store = Store; global.Sync = Sync;
 
@@ -72,7 +51,7 @@ function resetAll() {
   Store.clearAll();
   localStorage.removeItem("fpf_syncMeta");
   cloud.state = null; cloud.updatedAt = null; cloud.failNext = 0; cloud.calls = [];
-  timers = [];
+  timers.reset();
   Store.setSettings({ enableFSRS: false });
 }
 function review(rec) {
@@ -106,8 +85,8 @@ function review(rec) {
   setupSync("https://mock.workers.dev", "fpf-" + "A".repeat(42));
   review({ char: "印", pair: "in/ing", rating: 3, word: "印象", correctPy: "yìn" });
   ok(Sync.status().pending === true, "数据变更后 dirty=true（待推送）");
-  ok(timers.length >= 1, "已调度防抖推送定时器");
-  await runTimersAsync();
+  ok(timers.pending() >= 1, "已调度防抖推送定时器");
+  await timers.run();
   const put = cloud.calls[cloud.calls.length - 1];
   ok(put.method === "PUT" && put.url.endsWith("/api/sync"), "PUT /api/sync");
   ok(put.body.data && put.body.data.data && put.body.data.data.reviews.length === 1, "推送内容含 6 表数据（reviews 1 条）");
@@ -119,7 +98,7 @@ function review(rec) {
   setupSync("https://mock.workers.dev", "fpf-" + "B".repeat(42));
   cloud.failNext = 1;
   review({ char: "林", pair: "in/ing", rating: 3, word: "树林", correctPy: "lín" });
-  await runTimersAsync();
+  await timers.run();
   ok(Sync.status().pending === false, "重试成功后 dirty 清除");
   ok(cloud.state && cloud.state.data.data.reviews.length === 1, "云端最终收到数据");
 
@@ -128,13 +107,12 @@ function review(rec) {
   setupSync("https://mock.workers.dev", "fpf-" + "B2".repeat(21));
   cloud.failNext = 1;
   review({ char: "林", pair: "in/ing", rating: 3, word: "树林", correctPy: "lín" });
-  const t1 = timers.filter(Boolean); timers = [];
-  for (const fn of t1) await fn();
+  for (const fn of timers.takePending()) await fn();
   for (let i = 0; i < 5; i++) await Promise.resolve();
   ok(Sync.status().pending === true, "推送失败后 dirty 保留");
   ok(Sync.status().error != null, "记录错误信息: " + Sync.status().error);
-  ok(timers.filter(Boolean).length >= 1, "已调度重试定时器");
-  await runTimersAsync();
+  ok(timers.pending() >= 1, "已调度重试定时器");
+  await timers.run();
   ok(Sync.status().pending === false, "重试成功后 dirty 清除");
 
   console.log("== 5. 拉取合并（第二台设备接入） ==");
@@ -163,7 +141,7 @@ function review(rec) {
   console.log("== 6. suppress 抑制：导入合并不触发推送 ==");
   resetAll();
   setupSync("https://mock.workers.dev", "fpf-" + "D".repeat(42));
-  await runTimersAsync();
+  await timers.run();
   const callsBefore = cloud.calls.length;
   Store._withSuppress(() => {
     Store.set("reviews", []);
@@ -172,7 +150,7 @@ function review(rec) {
   ok(cloud.calls.length === callsBefore, "抑制期间写入不触发同步推送");
   review({ char: "印", pair: "in/ing", rating: 3, word: "印象", correctPy: "yìn" });
   ok(Sync.status().pending === true, "抑制结束后正常打点恢复");
-  await runTimersAsync();
+  await timers.run();
 
   console.log("== 7. 双设备 roundtrip（A 答 2 题 → B 拉取 → B 答 1 题 → A 拉取） ==");
   resetAll();
@@ -180,7 +158,7 @@ function review(rec) {
   setupSync("https://mock.workers.dev", keyE);
   review({ char: "印", pair: "in/ing", rating: 3, word: "印象", correctPy: "yìn" });
   review({ char: "林", pair: "in/ing", rating: 1, word: "树林", correctPy: "lín", wrongPy: "líng" });
-  await runTimersAsync();
+  await timers.run();
   ok(cloud.state && cloud.state.data.data.reviews.length === 2, "A 推送 2 条流水到云端");
 
   Store.clearAll();
@@ -190,7 +168,7 @@ function review(rec) {
   await Sync.pull();
   ok(Store.getReviews().length === 2, "B 拉取到 A 的 2 条流水");
   review({ char: "龙", pair: "l/n", rating: 3, word: "龙", correctPy: "lóng" });
-  await runTimersAsync();
+  await timers.run();
   ok(cloud.state.data.data.reviews.length === 3, "B 推送后云端 3 条（含 A 的 2 条）");
 
   Store.clearAll();
@@ -205,7 +183,7 @@ function review(rec) {
   const callsBefore8 = cloud.calls.length;
   review({ char: "印", pair: "in/ing", rating: 3, word: "印象", correctPy: "yìn" });
   ok(Sync.status().pending === false, "关闭同步后 dirty 不置位");
-  ok(cloud.calls.length === callsBefore8 && timers.filter(Boolean).length === 0, "关闭同步后无推送");
+  ok(cloud.calls.length === callsBefore8 && timers.pending() === 0, "关闭同步后无推送");
 
   console.log("\n结果: " + pass + " 通过 / " + fail + " 失败");
   process.exit(fail ? 1 : 0);
