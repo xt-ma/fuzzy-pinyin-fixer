@@ -996,6 +996,19 @@
 
   /* ---------------- 统计页 ---------------- */
   let statsRange = 7;
+  /* 薄弱字：字卡聚合（cards 按 pair:char 累计对错），按累计错误次数降序、
+     同次数按正确率升序、再按最近作答，取前 N */
+  function weakCardsOf(limit) {
+    return Object.values(Store.getCards())
+      .filter((c) => c && c.wrongCount > 0)
+      .sort(
+        (a, b) =>
+          b.wrongCount - a.wrongCount ||
+          a.correctCount / (a.reps || 1) - b.correctCount / (b.reps || 1) ||
+          b.lastTs - a.lastTs
+      )
+      .slice(0, limit || 10);
+  }
   function renderStats() {
     const stats = statsOf(statsRange);
     const series = trendSeries(stats, statsRange);
@@ -1029,6 +1042,36 @@
           "</div>"
         );
       }).join("") +
+      "</div>";
+
+    // 薄弱字 TOP：cards 聚合 + 单字重练入口
+    const weak = weakCardsOf(10);
+    $("#statsWeak").innerHTML =
+      '<div class="ant-card chart-box">' +
+      '<div class="row-between" style="margin-bottom:12px">' +
+      '<span style="font-size:15px;font-weight:500">薄弱字 TOP 10</span>' +
+      '<span class="ant-tag ' + (weak.length ? "red" : "") + '">' + weak.length + " 字</span></div>" +
+      (weak.length
+        ? '<div class="table-wrap"><table class="ant-table"><thead><tr>' +
+          "<th>字</th><th>词语</th><th>音对</th><th>练习</th><th>正确率</th><th>最近作答</th><th>操作</th>" +
+          "</tr></thead><tbody>" +
+          weak
+            .map((c) => {
+              const acc = Math.round((c.correctCount / (c.reps || 1)) * 100);
+              const accTag = acc >= 80 ? "green" : acc >= 50 ? "" : "red";
+              return (
+                "<tr><td class=\"word-cell\">" + escapeHtml(c.char) + "</td><td data-label=\"词语\">" + escapeHtml(wordOf(c)) +
+                "</td><td><span class=\"ant-tag " + pairTagClass(c.pair) + '">' + escapeHtml(Quiz.pairMeta(c.pair).label) +
+                '</span></td><td data-label="练习">' + c.reps + " 次</td>" +
+                '<td data-label="正确率"><span class="ant-tag ' + accTag + '">' + acc + "%</span></td>" +
+                '<td data-label="最近作答">' + fmtClock(c.lastTs) + "</td>" +
+                '<td class="ops"><a role="button" tabindex="0" onclick="App.practiceOne(\'' + c.char + '\',\'' + c.pair + '\')">重练</a></td></tr>'
+              );
+            })
+            .join("") +
+          "</tbody></table></div>" +
+          '<div class="chart-legend" style="margin-top:10px"><span style="color:var(--text-3)">按累计错误次数排序；开启记忆调度后，生疏字也会更频繁地自动安排复习。</span></div>'
+        : emptyHint("暂无薄弱字：答错的字会按错误次数汇总在这里")) +
       "</div>";
   }
 

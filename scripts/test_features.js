@@ -177,5 +177,21 @@ App.show("home");
 const removedKey = windowEvents.filter((e) => e.op === "remove" && e.type === "keydown");
 ok(removedKey.length === 0, "视图切换不移除 keydown 监听（handler 内部自守卫视图激活）");
 
+/* T9 统计页薄弱字 TOP 排行（cards 聚合，按累计错误次数排序） */
+Store.clearAll();
+Store.recordAnswer({ char: "乙", pair: "in/ing", rating: 1, word: "乙词", correctPy: "yǐ", mode: "mix", source: "t" });
+Store.recordAnswer({ char: "丙", pair: "l/n", rating: 3, word: "丙词", correctPy: "bǐng", mode: "mix", source: "t" });
+Store.recordAnswer({ char: "甲", pair: "l/n", rating: 1, word: "甲词", correctPy: "jiǎ", mode: "mix", source: "t" });
+Store.recordAnswer({ char: "甲", pair: "l/n", rating: 1, word: "甲词", correctPy: "jiǎ", mode: "mix", source: "t" });
+App.show("stats");
+const weakHtml = els.statsWeak.textContent;
+ok(weakHtml.indexOf("薄弱字") >= 0, "T9 统计页出现薄弱字区块");
+ok(weakHtml.indexOf("甲") >= 0 && weakHtml.indexOf("甲") < weakHtml.indexOf("乙"), "T9 错 2 次的甲排在错 1 次的乙之前");
+ok(weakHtml.indexOf("丙") < 0, "T9 只对不错的丙不进榜单");
+ok(weakHtml.indexOf("重练") >= 0 && els.statsWeak.innerHTML.indexOf("practiceOne") >= 0, "T9 每行带单字重练入口（practiceOne）");
+Store.clearAll();
+App.show("stats");
+ok(els.statsWeak.textContent.indexOf("暂无薄弱字") >= 0, "T9 无错题时显示空状态");
+
 console.log(`\n结果：${pass} 通过 / ${fail} 失败`);
 if (fail > 0) process.exit(1);

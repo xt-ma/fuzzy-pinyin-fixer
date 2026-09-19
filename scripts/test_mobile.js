@@ -39,7 +39,7 @@ const src = fs.readFileSync(path.join(ROOT, "data", "words.js"), "utf8");
 const json = src.replace(/^\/\/[^\n]*\n/, "").replace(/^window\.WORDS_DATA\s*=\s*/, "").replace(/;?\s*$/, "");
 const els = {};
 function makeEl(tag, id) { const e = new El(tag, id); if (id) els[id] = e; return e; }
-["toast","homePairCards","homeStats","homeActions","homeRecent","quizModeLabel","quizProgressText","quizProgressBar","quizPairTag","quizProgress","quizCard","quizKeyHint","btnQuitQuiz","btnPrev","btnResume","btnMasteredTop","btnTtsToggle","resultBody","masteredSearch","wrongbookAction","wrongbookBody","settingsStats","fsrsStatus","ttsDesc","syncHint","syncStatus","localKeyBox","statsCards","statsRange","statsCharts"].forEach((id) => makeEl("div", id));
+["toast","homePairCards","homeStats","homeActions","homeRecent","quizModeLabel","quizProgressText","quizProgressBar","quizPairTag","quizProgress","quizCard","quizKeyHint","btnQuitQuiz","btnPrev","btnResume","btnMasteredTop","btnTtsToggle","resultBody","masteredSearch","wrongbookAction","wrongbookBody","settingsStats","fsrsStatus","ttsDesc","syncHint","syncStatus","localKeyBox","statsCards","statsRange","statsCharts","statsWeak"].forEach((id) => makeEl("div", id));
 els.syncServer = makeEl("input", "syncServer"); els.remoteKeyInput = makeEl("input", "remoteKeyInput");
 els.syncAutoToggle = makeEl("input", "syncAutoToggle"); els.fsrsToggle = makeEl("input", "fsrsToggle");
 els.ttsToggle = makeEl("input", "ttsToggle");

@@ -153,7 +153,7 @@ const DEFAULT_DIV_IDS = [
   "quizCard", "quizKeyHint", "btnQuitQuiz", "btnPrev", "btnResume", "btnMasteredTop",
   "resultBody", "masteredSearch", "wrongbookAction", "wrongbookBody",
   "settingsStats", "fsrsStatus", "syncHint", "syncStatus", "localKeyBox",
-  "statsCards", "statsRange", "statsCharts", "ttsDesc",
+  "statsCards", "statsRange", "statsCharts", "statsWeak", "ttsDesc",
 ];
 const VIEW_IDS = [
   "view-home", "view-quiz", "view-result", "view-stats",
