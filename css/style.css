@@ -68,7 +68,7 @@ body {
   width: 28px; height: 28px; border-radius: 6px;
   background: var(--primary); color: #fff;
   display: flex; align-items: center; justify-content: center;
-  font-size: 15px; font-weight: 600;
+  font-size: 17px; font-weight: 600;   /* ≥16px 保证「拼」在小尺寸可辨形 */
 }
 .topbar .brand-name { color: #fff; font-size: 16px; font-weight: 500; letter-spacing: 1px; }
 .topbar nav { display: flex; align-items: center; height: 100%; gap: 4px; }
@@ -166,6 +166,11 @@ body {
 .ant-tag.red { color: var(--error); background: var(--error-1); border-color: #FFA39E; }
 .ant-tag.clickable { cursor: pointer; transition: all 0.2s; }
 .ant-tag.clickable:hover { border-color: var(--primary); color: var(--primary); }
+/* 筛选组激活项（如「已掌握」页音对筛选）：渲染时按状态挂 filter-on class */
+.ant-tag.filter-on { outline: 2px solid var(--primary); outline-offset: 1px; }
+
+/* 防断行工具：数字+单位等语义整体不拆行 */
+.nowrap { white-space: nowrap; }
 
 /* ================= Statistic ================= */
 .stat-grid { display: grid; gap: var(--sp-4); }
@@ -468,6 +473,8 @@ body {
   .page { padding: var(--sp-4); border-radius: var(--r-md); }
   .page-title { font-size: 18px; }
   .row-between { flex-direction: column; align-items: stretch; gap: var(--sp-2); }
+  /* row-between 转纵向后，Tag 不再拉伸占满整行（如错题本「N 条」） */
+  .row-between .ant-tag { align-self: flex-start; }
 
   /* 答题：选项等分弹性宽度，任何屏宽都不溢出 */
   .quiz-options { flex-direction: row; align-items: center; justify-content: center; gap: 10px; }

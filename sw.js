@@ -6,7 +6,7 @@
    - 更新：版本号 + skipWaiting/clientsClaim，发布新版本自动生效
    仅 https 环境生效（file:// 下浏览器不注册本文件）
    ============================================================ */
-const CACHE_NAME = "fpf-shell-v6"; // 每次发版递增：activate 时删除旧缓存，配合 skipWaiting 立即生效
+const CACHE_NAME = "fpf-shell-v7"; // 每次发版递增：activate 时删除旧缓存，配合 skipWaiting 立即生效
 const SHELL_ASSETS = [
   "./",
   "./css/style.css",
@@ -18,8 +18,7 @@ const SHELL_ASSETS = [
   "./js/app.js",
   "./data/words.js",
   "./manifest.json",
-  "./icons/icon-192.png",
-  "./icons/icon-512.png",
+  "./icons/icon-192.png", // manifest 仅声明 192（512 已移除，勿再缓存）
 ];
 
 self.addEventListener("install", (event) => {
