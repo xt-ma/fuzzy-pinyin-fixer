@@ -46,7 +46,7 @@ git remote add origin https://github.com/你的用户名/fuzzy-pinyin-fixer.git
 git push -u origin main
 ```
 
-> `.gitignore` 已排除：`node_modules`、wrangler 本地状态、两个词频表大文件（构建词库时才需要，放回本地即可）。
+> `.gitignore` 已排除：`node_modules`、wrangler 本地状态、两个词频表大文件（构建词库时才需要，放回本地即可）、`cloudflare/wrangler.toml`（含你的 KV namespace ID，不入版本库；从同目录 `wrangler.toml.example` 复制而来）。
 
 ---
 
@@ -77,7 +77,7 @@ git push -u origin main
 cd cloudflare
 npm i -g wrangler          # 或 npx wrangler
 wrangler login
-wrangler kv namespace create FPF_SYNC   # 把输出的 id 填进 wrangler.toml
+wrangler kv namespace create FPF_SYNC   # 把输出的 id 填进 wrangler.toml（首次先复制 wrangler.toml.example 为 wrangler.toml）
 wrangler deploy
 ```
 

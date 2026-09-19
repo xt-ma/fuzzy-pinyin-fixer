@@ -22,3 +22,6 @@ Thumbs.db
 *.tmp
 *.bak
 ~$*
+
+# ===== Cloudflare Worker 实际配置（含 KV namespace ID，不入版本库）=====
+cloudflare/wrangler.toml
