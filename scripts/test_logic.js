@@ -100,12 +100,30 @@ console.log("== 2. 出题流程 ==");
 // 2.1 专项出题：不重复、数量正确
 const q1 = Quiz.buildQuestions("pair", "in/ing", 10);
 ok(q1.length === 10, "专项 in/ing 出 10 题");
-const chars = q1.map((q) => q.char);
-ok(new Set(chars).size === chars.length, "轮内目标字不重复");
+// 考点粒度为 (字,读音)：多音字双读音可在同轮出现，但同一考点不重复
+const keys1 = q1.map((q) => q.char + "|" + q.entry.reading);
+ok(new Set(keys1).size === keys1.length, "轮内考点（字+读音）不重复");
 ok(q1.every((q) => q.options.length === 2 || q.options.length === 4), "每题 2 或 4 个选项（双音对字 4 选）");
 ok(q1.every((q) => q.options.some((o) => o.isCorrect)), "每题有正确选项");
 ok(q1.every((q) => q.options.filter((o) => o.isCorrect).length === 1), "每题恰好 1 个正确选项");
 ok(q1.every((q) => new Set(q.options.map((o) => o.py)).size === q.options.length), "选项读音不重复");
+
+// 2.1a 多音字双读音进题池（(字,读音) 考点粒度，2026-09）
+const jinPair = "in/ing";
+const jinReadings = Quiz.DATA.pairs[jinPair].entries
+  .filter((e) => e.char === "尽").map((e) => e.reading);
+ok(jinReadings.length === 2, `词库中「尽」含双读音条目（${jinReadings.join("/")}）`);
+const poolJin = Quiz.entryPool("pair", jinPair, {});
+const jinInPool = jinReadings.filter((r) => poolJin.some((e) => e.char === "尽" && e.reading === r));
+ok(jinInPool.length === 2, "多音字双读音均进入出题池（旧逻辑只保留第一条）");
+const poolExcl = Quiz.entryPool("pair", jinPair, { excludeChars: ["尽|" + jinReadings[0]] });
+ok(poolExcl.some((e) => e.char === "尽" && e.reading === jinReadings[0]) === false
+   && poolExcl.some((e) => e.char === "尽" && e.reading === jinReadings[1]),
+   "excludeChars 复合键只排除指定考点，另一读音保留");
+Store.addMastered("尽", jinPair);
+const poolMastered = Quiz.entryPool("pair", jinPair, {});
+ok(!poolMastered.some((e) => e.char === "尽"), "已掌握仍按字整体排除（双读音同时出池）");
+Store.removeMastered("尽", jinPair);
 
 // 2.1b 双音对字（如「凝」níng）生成 4 选项：nin/ning/lin/ling
 const ningEntry = Quiz.DATA.pairs["in/ing"].entries.find((e) => e.char === "凝" && e.reading === "níng")

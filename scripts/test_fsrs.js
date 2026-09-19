@@ -162,8 +162,9 @@ console.log("== 6. 多行题/无限模式兼容 ==");
   for (let i = 0; i < 20; i++) {
     const q = Quiz.currentQuestion();
     if (!q) { okRows = false; break; }
-    if (seen.has(q.char)) { okRows = false; break; }
-    seen.add(q.char);
+    const key = q.char + "|" + (q.entry ? q.entry.reading : "");
+    if (seen.has(key)) { okRows = false; break; }
+    seen.add(key);
     if (q.rows) {
       for (let ri = 0; ri < q.rows.length; ri++) {
         Quiz.answerRow(ri, q.rows[ri].options.find((o) => o.isCorrect));
@@ -174,7 +175,7 @@ console.log("== 6. 多行题/无限模式兼容 ==");
     }
     Quiz.next();
   }
-  ok(okRows && !Quiz.isFinished(), "无限模式 FSRS 出题 20 题正常、字不重复");
+  ok(okRows && !Quiz.isFinished(), "无限模式 FSRS 出题 20 题正常、考点（字+读音）不重复");
   ok(Store.getCards() && Object.keys(Store.getCards()).length > 0, "作答后卡片状态累积");
 })();
 

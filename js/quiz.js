@@ -37,8 +37,11 @@
     return p.entries;
   }
 
-  /* 条目池构建（公共）：按模式取条目 + 排除已掌握 + onlyChars/excludeChars 过滤 + 按字去重
-     返回条目数组（已混入 pairName 字段） */
+  /* 条目池构建（公共）：按模式取条目 + 排除已掌握 + onlyChars/excludeChars 过滤 + 按 (字,读音) 去重
+     返回条目数组（已混入 pairName 字段）。
+     去重粒度为 (char, reading)：多音字的不同读音是不同考点（如 尽 jǐn/jìn），均可出题；
+     已掌握仍按字整体排除（Store.addMastered 按字标记）。
+     excludeChars 为 char|reading 复合键数组（无限模式补题排除本轮已出考点）。 */
   function entryPool(mode, pair, opts) {
     opts = opts || {};
     const mastered = Store.getMastered();
@@ -60,18 +63,19 @@
       const set = new Set(opts.onlyChars);
       pool = pool.filter((e) => set.has(e.char));
     }
-    // 排除指定字（重练时不再混入错题字以外的已掌握字）
+    // 排除指定考点（补题时不再重复本轮已出过的 字+读音）
     if (opts.excludeChars) {
       const set = new Set(opts.excludeChars);
-      pool = pool.filter((e) => !set.has(e.char));
+      pool = pool.filter((e) => !set.has(e.char + "|" + e.reading));
     }
 
-    // 同一轮内不重复目标字：按字去重（保留第一出现的条目）
+    // 同一轮内不重复同一考点：按 (字,读音) 去重
     const seen = new Set();
     const dedup = [];
     for (const e of pool) {
-      if (!seen.has(e.char)) {
-        seen.add(e.char);
+      const key = e.char + "|" + e.reading;
+      if (!seen.has(key)) {
+        seen.add(key);
         dedup.push(e);
       }
     }
@@ -101,30 +105,37 @@
   /* FSRS 出题：到期队列（due<=now 且未被掌握/排除）优先，交错随机；不足再随机补新字 */
   function buildQuestionsFSRS(mode, pair, count, opts) {
     const pool = entryPool(mode, pair, opts);
-    const poolByChar = new Map(pool.map((e) => [e.char, e]));
+    // char → 该字的全部读音条目（到期卡片按字命中，双读音字两个考点都可入批）
+    const poolByChar = new Map();
+    for (const e of pool) {
+      if (!poolByChar.has(e.char)) poolByChar.set(e.char, []);
+      poolByChar.get(e.char).push(e);
+    }
     const countNum = isFinite(count) ? count : 20; // 无限模式按批 20 题
     const now = Date.now();
 
     // 到期复习队列（交错随机，保证相似字不扎堆）
     const dueEntries = Store.getDueKeys(now, 2000)
       .filter((d) => poolByChar.has(d.char))
-      .map((d) => poolByChar.get(d.char));
+      .flatMap((d) => poolByChar.get(d.char));
 
     const questions = [];
-    const used = new Set();
+    const used = new Set(); // (char,reading) 复合键去重
+    const pick = (e, fromFSRS) => {
+      const key = e.char + "|" + e.reading;
+      if (used.has(key)) return;
+      used.add(key);
+      questions.push(makeQuestion(Object.assign({}, e, { fromFSRS })));
+    };
     for (const e of shuffle(dueEntries)) {
       if (questions.length >= countNum) break;
-      if (used.has(e.char)) continue;
-      used.add(e.char);
-      questions.push(makeQuestion(Object.assign({}, e, { fromFSRS: true })));
+      pick(e, true);
     }
     // 不足：随机补充未到期/新字
     if (questions.length < countNum) {
       for (const e of shuffle(pool)) {
         if (questions.length >= countNum) break;
-        if (used.has(e.char)) continue;
-        used.add(e.char);
-        questions.push(makeQuestion(Object.assign({}, e, { fromFSRS: false })));
+        pick(e, false);
       }
     }
     return questions;
@@ -334,7 +345,7 @@
   }
 
   function escapeHtml(s) {
-    return String(s)
+    return String(s == null ? "" : s)
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
@@ -367,7 +378,7 @@
     return round;
   }
 
-  /* 无限模式补题：题库耗尽时重新洗牌补一批，优先排除本轮已出现过的字 */
+  /* 无限模式补题：题库耗尽时重新洗牌补一批，优先排除本轮已出过的考点（字+读音） */
   function refill() {
     if (!round) return;
     let fresh = buildQuestions(
@@ -508,7 +519,8 @@
   }
 
   function next() {
-    if (round.questions[round.index]) round.seenChars.push(round.questions[round.index].char);
+    const q = round.questions[round.index];
+    if (q) round.seenChars.push(q.char + "|" + (q.entry ? q.entry.reading : "")); // 复合键，补题按考点排重
     round.index += 1;
     round.maxIndex = Math.max(round.maxIndex, round.index);
     // 无限模式：题目耗尽时自动补一批
@@ -583,6 +595,7 @@
     PAIR_ORDER,
     CHAR_LOOKUP,
     allEntries,
+    entryPool,
     buildQuestions,
     startRound,
     getRound,
@@ -605,6 +618,7 @@
     stripTone,
     tagLabel,
     renderPy,
+    escapeHtml,
     diffKeyOf,
     pairMeta,
     shuffle,
