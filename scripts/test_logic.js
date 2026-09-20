@@ -125,6 +125,15 @@ const poolMastered = Quiz.entryPool("pair", jinPair, {});
 ok(!poolMastered.some((e) => e.char === "尽"), "已掌握仍按字整体排除（双读音同时出池）");
 Store.removeMastered("尽", jinPair);
 
+// 2.1b 权威读音终审回归（2026-09 Unihan 三源审计发现）：
+// 摒 = bìng（四声）。pypinyin 主读 bǐng 为 1983 新华字典旧读残留，
+// build_words.py 的 READING_OVERRIDES 已修正——此断言防重建词库时数据回退。
+const bingEntry = Quiz.DATA.pairs["in/ing"].entries.find((e) => e.char === "摒");
+ok(!!bingEntry && bingEntry.reading === "bìng", "「摒」读音为 bìng（四声，现行规范唯一读音）");
+ok(bingEntry && bingEntry.options.correct.py === "bìng" && bingEntry.options.wrong.py === "bìn",
+   "「摒」正确/干扰项为 bìng/bìn（bìn 真实存在，非幻音）");
+ok(bingEntry && bingEntry.words.every((w) => w.pinyin.startsWith("bìng ")), "「摒」词条拼音串同步为 bìng");
+
 // 2.1b 双音对字（如「凝」níng）生成 4 选项：nin/ning/lin/ling
 const ningEntry = Quiz.DATA.pairs["in/ing"].entries.find((e) => e.char === "凝" && e.reading === "níng")
   || Quiz.DATA.pairs["l/n"].entries.find((e) => e.char === "凝" && e.reading === "níng");

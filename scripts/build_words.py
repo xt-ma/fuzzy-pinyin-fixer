@@ -25,6 +25,15 @@ from pypinyin import lazy_pinyin, Style, pinyin
 
 import in_ing_1, in_ing_2, en_eng_1, l_n_1
 
+# ---- 人工终审覆盖表：pypinyin 主读为旧读/误读时的权威修正 ----
+# pypinyin 既是生成器又是校验器，无法发现自身源数据错误，故以此表为最终裁决。
+# 新增条目必须附规范依据；配套审计脚本 scripts/audit_readings.py（Unihan 交叉校验）。
+READING_OVERRIDES = {
+    # 摒：《通用规范汉字表》《通用规范汉字字典》(kTGHZ2013)、Unihan kMandarin/kHanyuPinyin、
+    # 台湾《国语一字多音审订表》均为 bìng；bǐng 是 1983 新华字典旧读（pypinyin 主读残留）。
+    "摒": "bìng",
+}
+
 ALL = {}
 for mod in (in_ing_1, in_ing_2, en_eng_1, l_n_1):
     for k, v in mod.WORDS.items():
@@ -115,7 +124,10 @@ def swap_pair_tone3(t3, pair):
     return t3
 
 def word_reading(word, char):
-    """返回目标字在词中的读音（取第一次出现位置），找不到返回 None"""
+    """返回目标字在词中的读音（取第一次出现位置），找不到返回 None。
+    覆盖表优先：该字若经人工终审，一律采用终审读音。"""
+    if char in READING_OVERRIDES:
+        return READING_OVERRIDES[char]
     idx = word.find(char)
     if idx < 0:
         return None
@@ -123,6 +135,15 @@ def word_reading(word, char):
     if idx >= len(pys):
         return None
     return pys[idx]
+
+def word_pinyin_str(word, char, reading):
+    """词条拼音串：lazy_pinyin 生成后，把目标字首次出现位置的音节替换为
+    终审读音（覆盖表字在 pypinyin 里的主读可能是旧读）。"""
+    pys = list(lazy_pinyin(word, style=Style.TONE))
+    idx = word.find(char)
+    if idx >= 0 and idx < len(pys):
+        pys[idx] = reading
+    return " ".join(pys)
 
 # ---- 按 (pair, char, reading) 聚合 ----
 # 以词中目标字的实际读音为 reading 归类（精确匹配，避免多音字其他读音误配）
@@ -195,7 +216,7 @@ for pair, defn in PAIR_DEF.items():
                     "correct": {"py": reading, "tag": correct_tag},
                     "wrong": {"py": wrong_py, "tag": wrong_tag},
                 },
-                "words": [{"word": w, "pinyin": " ".join(lazy_pinyin(w, style=Style.TONE))} for w in words],
+                "words": [{"word": w, "pinyin": word_pinyin_str(w, char, reading)} for w in words],
             })
     final["pairs"][pair] = {
         "name": pair, "label": defn["label"], "desc": defn["desc"], "color": defn["color"],

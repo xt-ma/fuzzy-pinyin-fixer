@@ -71,7 +71,7 @@ scripts/              词库构建与测试脚本（helpers/ 为测试共享桩�
 
 ```bash
 npm test                        # 一键运行全部套件（等价 node scripts/test_all.js）
-node scripts/test_logic.js      # 词库完整性 + 出题逻辑（34 项断言）
+node scripts/test_logic.js      # 词库完整性 + 出题逻辑 + 权威读音回归（37 项断言）
 node scripts/test_features.js   # 已掌握按钮 + 回溯 + 回溯态已掌握交互（49 项断言）
 node scripts/test_sync.js       # 数据导出/导入/合并/校验（47 项断言）
 node scripts/test_fsrs.js       # FSRS 调度 + 到期队列 + 回滚切换（33 项断言）
@@ -80,9 +80,10 @@ node scripts/test_sync_ui.js    # 同步设置区 UI：绑定/校验/警告/清�
 node scripts/test_mobile.js     # 移动端适配 + 无障碍/PWA/模块加载静态检查（28 项断言）
 node scripts/test_tts.js        # TTS：开关/voice 选择/超时兜底/引擎降级（26 项断言）
 python scripts/analyze_wordfreq.py # 词频表组词覆盖率分析（docs/wordfreq_analysis.json）
+python scripts/audit_readings.py   # 读音权威性审计：Unihan 交叉校验（首次自动下载 Unihan.zip）
 ```
 
-共 **8 个套件 / 277 项断言**。提交前自动跑测试：启用仓库自带的 pre-commit 钩子（每个克隆执行一次）：
+共 **8 个套件 / 280 项断言**。提交前自动跑测试：启用仓库自带的 pre-commit 钩子（每个克隆执行一次）：
 
 ```bash
 git config core.hooksPath scripts/git-hooks

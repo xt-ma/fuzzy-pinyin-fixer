@@ -2693,26 +2693,26 @@
     },
     {
      "char": "摒",
-     "reading": "bǐng",
+     "reading": "bìng",
      "type": "ing",
      "options": {
       "correct": {
-       "py": "bǐng",
+       "py": "bìng",
        "tag": "ing"
       },
       "wrong": {
-       "py": "bǐn",
+       "py": "bìn",
        "tag": "in"
       }
      },
      "words": [
       {
        "word": "摒弃",
-       "pinyin": "bǐng qì"
+       "pinyin": "bìng qì"
       },
       {
        "word": "摒除",
-       "pinyin": "bǐng chú"
+       "pinyin": "bìng chú"
       }
      ]
     },

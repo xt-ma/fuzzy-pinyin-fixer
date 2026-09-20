@@ -71,3 +71,11 @@
 - **拆分中发现并修复 ASI 隐藏 bug 家族**：4 处字符串拼接在 `))` 后换行直接跟 `"</div>"`（缺 `+`），ASI 使其成为被丢弃的独立语句——首页/复盘/已掌握的卡片闭合 div 丢失（浏览器自动补全掩盖），错题本底部说明 alert 从未渲染过；已补齐并在测试中断言
 - 测试规模：8 套件 **277 断言**全绿（logic 34 / features 49 / sync 47 / fsrs 33 / sync_auto 32 / sync_ui 28 / mobile 28 / tts 26）；sw 壳缓存 v9→v10；
   另根除 test_logic 两处偶发失败（随机碰词 + wrongList 空取值），压测 600 次零失败
+
+**2026-09-20（读音审计与修正）**
+- **修正「摒」读音：bǐng → bìng（四声）**。三源审计（Unihan kMandarin/kHanyuPinyin/kXHC1983 + 现行规范 + 网络权威）确认现行规范唯一读音为 bìng；bǐng 是 1983 新华字典旧读，经 pypinyin 主读残留进入词库（生成器即校验器，自校验盲区）
+- **build_words.py 新增 READING_OVERRIDES 人工终审覆盖表**：读音归类与词条拼音生成两处应用，防止重建词库时旧读回退；重建后 git diff 仅摒条目变化（无 pypinyin 版本漂移）
+- **新增 scripts/audit_readings.py**：全库读音 vs Unihan 交叉审计（FAIL/INFO 分级，轻声白名单），当前 726 条目 FAIL 0 / INFO 26（均为合法多音字又读）；Unihan.zip 自动缓存于 scripts/_unihan_cache/（gitignore）
+- 干扰项由 bǐn（幻音）变为 bìn（鬓，真实音节），该题从"排除法送分题"变为有效辨析题
+- test_logic +3 断言（读音/选项/词条拼音回归锁定，280 断言全绿）；sw 壳缓存 v10→v11
+- 全库审计结论：除摒外无其他确定性声调错误（此前报告的"腾 teng 无调号"实为折腾 zhē·teng 合法轻声，非 bug）

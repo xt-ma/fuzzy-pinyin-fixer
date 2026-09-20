@@ -25,3 +25,8 @@ Thumbs.db
 
 # ===== Cloudflare Worker 实际配置（含 KV namespace ID，不入版本库）=====
 cloudflare/wrangler.toml
+
+# ===== 读音审计脚本的 Unihan 缓存（scripts/audit_readings.py 自动下载）=====
+scripts/_unihan_cache/
+__pycache__/
+*.pyc
