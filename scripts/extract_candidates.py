@@ -4,7 +4,7 @@ import json
 import openpyxl
 from pypinyin import lazy_pinyin, Style
 
-path = r"D:\UserProgram\fuzzy-pinyin-fixer\Chinese character list from 2.5 billion words corpus ordered by frequency.xlsx"
+path = r"C:\dev\self\fuzzy-pinyin-fixer\Chinese character list from 2.5 billion words corpus ordered by frequency.xlsx"
 wb = openpyxl.load_workbook(path, read_only=True, data_only=True)
 ws = wb[wb.sheetnames[0]]
 
@@ -64,6 +64,6 @@ for d in all_detail:
     unique.add(d['char'])
 print("去重后总候选字:", len(unique))
 
-with open(r"D:\UserProgram\fuzzy-pinyin-fixer\scripts\_candidates.json", "w", encoding="utf-8") as f:
+with open(r"C:\dev\self\fuzzy-pinyin-fixer\scripts\_candidates.json", "w", encoding="utf-8") as f:
     json.dump(all_detail, f, ensure_ascii=False, indent=1)
 print("明细已写入 scripts/_candidates.json")

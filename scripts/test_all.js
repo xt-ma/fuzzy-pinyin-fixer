@@ -2,26 +2,29 @@
    测试聚合入口：按顺序运行全部测试套件，汇总结果
    用法：node scripts/test_all.js （或 npm test）
    pre-commit 钩子（scripts/git-hooks/）依赖本脚本非零退出码拦截提交
+   套件为 .ts（Node ≥24 原生类型剥离直接运行，无需 ts-node）
    ============================================================ */
-"use strict";
-const { spawnSync } = require("child_process");
-const path = require("path");
+import { spawnSync } from "node:child_process";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const SUITES = [
-  "test_logic.js",      // 词库完整性 + 出题逻辑
-  "test_features.js",   // 已掌握 + 回溯
-  "test_sync.js",       // 导出/导入/合并
-  "test_fsrs.js",       // FSRS 调度
-  "test_sync_auto.js",  // 自动云同步状态机
-  "test_sync_ui.js",    // 同步设置区 UI
-  "test_mobile.js",     // 移动端/PWA 静态检查
-  "test_tts.js",        // TTS 朗读
+  "test_logic.ts",      // 词库完整性 + 出题逻辑
+  "test_features.ts",   // 已掌握 + 回溯
+  "test_sync.ts",       // 导出/导入/合并
+  "test_fsrs.ts",       // FSRS 调度
+  "test_sync_auto.ts",  // 自动云同步状态机
+  "test_sync_ui.ts",    // 同步设置区交互（sync-flows）
+  "test_mobile.ts",     // 新栈静态检查：PWA/依赖治理/无障碍
+  "test_tts.ts",        // TTS 朗读
 ];
 
 let failed = [];
 let totalAssertions = 0;
 for (const suite of SUITES) {
-  const r = spawnSync(process.execPath, [path.join(__dirname, suite)], {
+  const r = spawnSync(process.execPath, [join(__dirname, suite)], {
     stdio: ["ignore", "pipe", "pipe"],
     encoding: "utf8",
   });

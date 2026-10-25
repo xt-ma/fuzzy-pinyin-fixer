@@ -22,42 +22,45 @@
 - **移动端与 PWA**：手机浏览器直接可用（480px 断点 + 触控热区 ≥44px + iOS 16px 防聚焦放大 + 刘海屏安全区）；部署到 Cloudflare Pages 后可"添加到主屏幕"全屏使用，离线壳缓存（manifest + Service Worker，断网可打开）。键盘快捷键文案在触屏设备自动切换为"点击选项作答"。
 - 词库基于《现代汉语语料库词频表》（cncorpus 2000 万字语料）+ 人工词库兜底，三组音对共 **726 条目 / 2588 词条**（每字 2-5 个词，按词频取优；66 个新关键字为词频表补充）
 
-## 运行
+## 技术栈与运行
 
-纯前端、零依赖：直接双击打开 `index.html`，或用任意静态服务器托管整个目录。
+前端为 **React 19 + Vite + TypeScript** 重构版（shadcn/ui Nova 风格 + Tailwind CSS v4 + Motion 动画 + Zustand 状态 + Lucide 图标 + react-resizable-panels 布局 + dnd-kit 拖拽）；核心逻辑层 `src/lib/` 零框架依赖、localStorage 与旧版完全兼容，可脱离 DOM 直接测试。
 
 ```bash
-# 本地预览（可选）
-python -m http.server 8734
+npm install        # 首次
+npm run dev        # 本地开发（Vite，默认 5173 端口）
+npm run build      # 类型检查 + 产物构建 → dist/（含 PWA Service Worker）
+npm run preview    # 本地预览构建产物
+npm test           # 全部测试套件
 ```
 
 ## 项目结构
 
 ```
-index.html            单页应用入口（file:// 可直接运行）
-manifest.json         PWA 配置（应用名/主题色/图标）
-sw.js                 PWA Service Worker（应用壳缓存，仅 https 生效）
-package.json          仅承载 npm test 脚本入口（零依赖，无 node_modules）
+index.html            单页应用入口（Vite，引用 /src/main.tsx）
+src/main.tsx          React 挂载 + PWA Service Worker 注册
+src/App.tsx           视图路由（hash 深链接）+ 全局编排（同步启动/TTS 降级提示）
+src/pwa.ts            PWA manifest 配置（唯一事实来源，vite-plugin-pwa 读取）
+src/index.css         全局样式（Tailwind v4 CSS-first：Nova 风 oklch tokens + 音对色 + 触控/减弱动效适配）
+src/lib/              逻辑层（零框架依赖，Node 可直测）：store(FSRS 调度写入)/fsrs/sync/quiz/round/
+                      pinyin/words/tts/stats/sync-flows/utils
+src/stores/           Zustand：app(数据镜像)/quiz(轮次状态机)/ui(路由+toast+确认弹窗)/sync(状态镜像)
+src/components/ui/    shadcn 风格基础组件（源码可控：button/card/dialog/alert-dialog/switch/
+                      checkbox/tooltip/badge/input/progress/table/resizable）
+src/components/app/   应用级组件（AppShell 双栏可调布局/toaster/confirm-host/segmented/pair-badge 等）
+src/views/            七个视图：home/quiz/result/stats/mastered/wrongbook/settings
 icons/icon-192.png    PWA 图标（192×192）
-css/style.css         全局样式（基于 docs/design-spec.md 方案 C tokens + 响应式/触屏适配）
-js/store.js           localStorage 数据层（wrongBook/mastered/history/settings/reviews/cards + FSRS 调度写入）
-js/fsrs.js            FSRS-6 间隔重复调度核心（从 fsrs4anki v6.1.1 移植，纯 JS 零依赖）
-js/sync.js            自动云同步模块（密钥生成/状态机/拉取推送/失败重试，配合 cloudflare/）
-js/quiz.js            题目生成与轮次状态机（考点粒度=字+读音，含多字题 rows / FSRS 到期队列出题）
-js/ui.js              共享 UI 工具（window.UI：toast/popconfirm/统计聚合/表格卡片化标注等）
-js/view-*.js          视图模块（window.Views：home/quiz/result/stats/mastered/wrongbook/settings）
-js/app.js             应用控制器（视图切换/练习入口/App 全局动作/全局事件绑定与初始化）
-data/words.js         词库数据（构建产物，供 <script> 直接加载）
-data/words.json       词库数据（可审计的 JSON 源）
+data/words.json       词库数据（src/lib/words.ts 直接 import）
+data/words.js         词库数据（构建管线中间产物，供 scripts/build_words.py 续跑）
 cloudflare/           Cloudflare Worker 同步服务（index.js + wrangler.toml.example；
                       实际 wrangler.toml 含 KV namespace ID，已 gitignore 不入库）
 docs/                 PRD、设计规范、数据设计、分析报告、部署教程
-scripts/              词库构建与测试脚本（helpers/ 为测试共享桩；git-hooks/ 为 pre-commit 钩子）
+scripts/              词库构建（Python）+ 测试套件（.ts，Node ≥24 原生运行）；git-hooks/ 为 pre-commit 钩子
 ```
 
 ## 部署（多端云同步）
 
-应用本身可 file:// 直接运行；需要多端自动同步时，按 [`docs/deploy-cloudflare.md`](docs/deploy-cloudflare.md) 部署到 Cloudflare（免费）：Pages 托管应用 + Workers 同步 API + KV 存储，然后设置页填入服务器地址、开启自动云同步即可。
+`npm run build` 产物在 `dist/`，托管到任意静态服务即可；需要多端自动同步时，按 [`docs/deploy-cloudflare.md`](docs/deploy-cloudflare.md) 部署到 Cloudflare（免费）：Pages 托管应用 + Workers 同步 API + KV 存储，然后设置页填入服务器地址、开启自动云同步即可。
 
 ## 词库构建与校验
 
@@ -71,19 +74,19 @@ scripts/              词库构建与测试脚本（helpers/ 为测试共享桩�
 
 ```bash
 npm test                        # 一键运行全部套件（等价 node scripts/test_all.js）
-node scripts/test_logic.js      # 词库完整性 + 出题逻辑 + 权威读音回归（37 项断言）
-node scripts/test_features.js   # 已掌握按钮 + 回溯 + 回溯态已掌握交互（49 项断言）
-node scripts/test_sync.js       # 数据导出/导入/合并/校验（47 项断言）
-node scripts/test_fsrs.js       # FSRS 调度 + 到期队列 + 回滚切换（33 项断言）
-node scripts/test_sync_auto.js  # 自动云同步：密钥/打点/推送/重试/双设备（32 项断言）
-node scripts/test_sync_ui.js    # 同步设置区 UI：绑定/校验/警告/清除数据（28 项断言）
-node scripts/test_mobile.js     # 移动端适配 + 无障碍/PWA/模块加载静态检查（28 项断言）
-node scripts/test_tts.js        # TTS：开关/voice 选择/超时兜底/引擎降级（26 项断言）
+node scripts/test_logic.ts      # 词库完整性 + 出题逻辑 + 权威读音回归（39 项断言）
+node scripts/test_features.ts   # 已掌握按钮 + 回溯 + 自动切题调度（46 项断言）
+node scripts/test_sync.ts       # 数据导出/导入/合并/校验（47 项断言）
+node scripts/test_fsrs.ts       # FSRS 调度 + 到期队列 + 回滚切换（33 项断言）
+node scripts/test_sync_auto.ts  # 自动云同步：密钥/打点/推送/重试/双设备（32 项断言）
+node scripts/test_sync_ui.ts    # 同步设置区流程：绑定/校验/警告/清除数据（31 项断言）
+node scripts/test_mobile.ts     # 新栈静态检查：PWA/依赖治理/触控/无障碍（38 项断言）
+node scripts/test_tts.ts        # TTS：开关/voice 选择/超时兜底/引擎降级（26 项断言）
 python scripts/analyze_wordfreq.py # 词频表组词覆盖率分析（docs/wordfreq_analysis.json）
 python scripts/audit_readings.py   # 读音权威性审计：Unihan 交叉校验（首次自动下载 Unihan.zip）
 ```
 
-共 **8 个套件 / 280 项断言**。提交前自动跑测试：启用仓库自带的 pre-commit 钩子（每个克隆执行一次）：
+共 **8 个套件 / 292 项断言**（测试为 .ts，Node ≥24 原生类型剥离直接运行）。提交前自动跑测试：启用仓库自带的 pre-commit 钩子（每个克隆执行一次）：
 
 ```bash
 git config core.hooksPath scripts/git-hooks

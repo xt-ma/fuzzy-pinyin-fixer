@@ -17,6 +17,7 @@ Thumbs.db
 .vscode/
 .idea/
 .workbuddy/
+.zcodeignore
 
 # ===== 临时文件 =====
 *.tmp
@@ -30,3 +31,6 @@ cloudflare/wrangler.toml
 scripts/_unihan_cache/
 __pycache__/
 *.pyc
+
+# Vite 构建产物
+dist/

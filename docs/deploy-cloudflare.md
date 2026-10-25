@@ -37,7 +37,7 @@
 ## 三、推送到 GitHub
 
 ```bash
-cd C:\UserProgram\fuzzy-pinyin-fixer
+cd C:\dev\self\fuzzy-pinyin-fixer
 git init
 git add .
 git commit -m "模糊音克星：FSRS + 多端同步 + 词库 v2"
@@ -103,18 +103,23 @@ curl https://fuzzy-pinyin-fixer-sync.你的用户名.workers.dev/api/sync -H "X-
 
 ## 六、部署应用（Pages）
 
+> 2026-10 前端重构为 React + Vite：**应用需先构建**（`npm run build` → `dist/`，已含 PWA Service Worker 与词库数据），不能再像旧纯静态版那样直接部署项目根目录。
+
 ### 方式 A：连接 GitHub（推荐）
 
-1. Workers & Pages →「Create」→「Pages」→「Connect to Git」→ 选择仓库
-2. 构建配置：
-   - Framework preset：**None**
-   - Build command：**留空**（项目零构建）
-   - Build output directory：**`.`**（项目根目录）
-3. 部署 → 得到 `https://<项目名>.pages.dev` 地址
+Pages 项目 →「Settings」→「Build」→ 编辑构建配置（新版流水线分「构建命令 + 部署命令」两段）：
+
+- **Build command**：`npm run build`
+- **Deploy command**：`npx wrangler pages deploy dist --project-name fuzzy-pinyin-fixer --commit-dirty=true`
+
+> 旧配置（纯静态时代）的部署命令是 `cd cloudflare && npx wrangler deploy`——重构后项目根目录不再含可直接伺服的静态文件，wrangler 会报
+> `Could not detect a directory containing static files`。务必改成上面的两段式配置。
+
+保存后 Retry deploy，得到 `https://<项目名>.pages.dev` 地址。
 
 ### 方式 B：Direct Upload（免 GitHub）
 
-Workers & Pages →「Create」→「Pages」→「Upload assets」→ 把整个项目目录（`index.html`、`css/`、`js/`、`data/`）拖拽上传。
+本地先构建 `npm install && npm run build`，然后 Workers & Pages →「Create」→「Pages」→「Upload assets」→ 把 **`dist/` 目录内的全部产物**拖拽上传。
 
 ---
 
@@ -155,7 +160,7 @@ Workers & Pages →「Create」→「Pages」→「Upload assets」→ 把整个
 
 ## 附录 A：免 GitHub 部署（Direct Upload + dashboard）
 
-1. Pages：Direct Upload 拖拽上传整个项目目录
+1. Pages：本地 `npm run build` 后拖拽上传 `dist/` 目录产物
 2. Workers：dashboard 新建 Worker → Edit code 粘贴 `cloudflare/index.js` → Settings 绑定 KV（`FPF_SYNC`）
 3. 其余与应用内配置、日常使用完全相同
 
